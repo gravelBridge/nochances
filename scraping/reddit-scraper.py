@@ -1,9 +1,13 @@
 import praw
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 reddit = praw.Reddit(
-    client_id="SQ5K2phxyPX1IPzIATucSw",
-    client_secret="w5la470xfb1h1yIlrSPw5nE0kYzi1w",
-    user_agent="your_user_agent"
+    client_id=os.getenv("client_id"),
+    client_secret=os.getenv("client_secret"),
+    user_agent="nochances"
 )
 
 subreddit = reddit.subreddit("AskReddit")
