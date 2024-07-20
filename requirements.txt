@@ -1,4 +1,5 @@
 praw
+openai
 zstandard
 datetime
 python-dotenv
