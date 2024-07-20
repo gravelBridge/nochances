@@ -34,8 +34,13 @@ def categorize():
                 seed=42
             )
             message = completion.choices[0].message.content
-            message = json.loads(message)
+            try:
+                message = json.loads(message)
+            except Exception as e:
+                print(e)
+                continue
             result.append(message)
+            print(message)
             print("Processed post id: " + post_id)
 
 categorize()
