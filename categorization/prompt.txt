@@ -1,0 +1,100 @@
+Given a college application by a student, output an array of numbers where each index represents the following information:
+Index Definitions:
+
+0, Ethnicity:
+0: Underrepresented Minority (Black, Hispanic, Native American, Pacific Islander)
+1: Not Underrepresented Minority (White, Asian, Other)
+
+1, Gender:
+0: Male
+1: Female
+2: Other/Non-binary
+
+2, Extracurriculars [Array]:
+[0]: Number of National/International leadership positions
+[1]: Number of State/Regional leadership positions
+[2]: Number of Local/School leadership positions
+[3]: Number of Volunteering Activities (10+ hours each)
+[4]: Number of Entrepreneurial ventures (founded or co-founded)
+[5]: Number of internships
+[6]: Number of classes taken outside of high school curriculum
+
+3, Awards [Array]:
+[0]: Number of International Awards (1st-3rd place or equivalent)
+[1]: Number of National Awards (1st-3rd place or equivalent)
+[2]: Number of State/Regional Awards (1st-3rd place or equivalent)
+[3]: Number of Local/School Awards (1st-3rd place or equivalent)
+[4]: Number of Honorable Mentions or Participation Awards (any level)
+
+4, Income Bracket (family annual income):
+0: $0-30,000
+1: $30,001-60,000
+2: $60,001-100,000
+3: $100,001-200,000
+4: $200,001+
+
+5, Type of School Accepted Into:
+(If accepted to multiple schools, repeat this entire process for each school the person was accepted into)
+0: STEM-focused institution
+1: Liberal Arts institution
+2: Art/Design school
+3: Music Conservatory
+4: Other specialized institution
+
+6, Selectivity of Accepted School:
+0: Extremely selective (acceptance rate <5%)
+1: Highly selective (5-10%)
+2: Very selective (10-20%)
+3: Selective (20-40%)
+4: Somewhat selective (40-60%)
+5: Minimally selective (60-80%)
+6: Open admission (>80% or open admission policy)
+
+7, Application Round:
+0: Early Decision/Early Action
+1: Regular Decision
+
+8, GPA (Unweighted, 4.0 scale, estimate in a 4.0 UW scale if not available in this format)
+0: Below 2.5
+1: 2.5 to 2.99
+2: 3.0 to 3.49
+3: 3.5 to 3.79
+4: 3.8 to 4.0
+
+9, Number of AP/IB Courses:
+Report the total number of AP and IB courses taken
+
+10, AP/IB Scores:
+0: No AP/IB scores
+1: Average score below 3 (AP) or 4 (IB)
+2: Average score 3-3.9 (AP) or 4-4.9 (IB)
+3: Average score 4-4.9 (AP) or 5-5.9 (IB)
+4: Average score 5 (AP) or 6-7 (IB)
+
+11, Standardized Test Scores:
+0: No score or below 1000 SAT / 20 ACT
+1: 1000-1190 SAT / 20-23 ACT
+2: 1200-1390 SAT / 24-29 ACT
+3: 1400-1490 SAT / 30-33 ACT
+4: 1500+ SAT / 34+ ACT
+
+12, School Location:
+0: Rural (population < 10,000)
+1: Suburban (population 10,000 - 100,000)
+2: Urban (population > 100,000)
+
+13, College Selectivity Tier:
+Based on the most selective school accepted to:
+
+0: Highly Selective (acceptance rate <10%)
+1: Very Selective (acceptance rate 10-20%)
+2: Selective (acceptance rate 20-40%)
+3: Somewhat Selective (acceptance rate 40-60%)
+4: Minimally Selective (acceptance rate >60%) or Open Admission
+
+Note:
+This application is sourced from a Reddit forum. If it lacks sufficient information to make a determination, contains clearly false information, or is obviously a joke, output only "0" (without quotes).
+
+CRITICAL:
+
+Only output a list like [], nothing else, no newline characters. DO NOT ADD ANY COMMENTARY.
