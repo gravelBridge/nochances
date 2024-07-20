@@ -9,3 +9,19 @@
 2024-07-19 16:50:28,408 - INFO: From date 2022-01-01 to date 2030-12-31
 2024-07-19 16:50:28,408 - INFO: Input: collegeresults_submissions.zst : Output: collegeresults_data.json
 2024-07-19 16:50:28,843 - INFO: Complete : 8,079 : 2,379 : 2,015
+2024-07-19 22:22:03,138 - INFO: Starting data collection and processing
+2024-07-19 22:22:03,139 - INFO: Processing ZST file: collegeresults_submissions.zst
+2024-07-19 22:22:03,502 - INFO: ZST processing complete : 8,079 : 2,379 : 2,015
+2024-07-19 22:22:03,503 - INFO: ZST data processed: 2379 entries
+2024-07-19 22:22:05,318 - INFO: Processed 100 posts from Reddit API
+2024-07-19 22:22:09,316 - INFO: Processed 200 posts from Reddit API
+2024-07-19 22:22:12,845 - INFO: Processed 300 posts from Reddit API
+2024-07-19 22:22:16,515 - INFO: Processed 400 posts from Reddit API
+2024-07-19 22:22:20,999 - INFO: Processed 500 posts from Reddit API
+2024-07-19 22:22:24,839 - INFO: Processed 600 posts from Reddit API
+2024-07-19 22:22:28,376 - INFO: Processed 700 posts from Reddit API
+2024-07-19 22:22:32,054 - INFO: Processed 800 posts from Reddit API
+2024-07-19 22:22:36,823 - INFO: Processed 900 posts from Reddit API
+2024-07-19 22:22:41,785 - INFO: API data fetched: 951 entries
+2024-07-19 22:22:41,787 - INFO: Combined data: 3100 entries
+2024-07-19 22:22:41,950 - INFO: Combined data written to combined_collegeresults_data.json
