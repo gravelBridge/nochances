@@ -17,7 +17,7 @@ def categorize(out_file, prompt):
 
     for post_id in post_ids:
         message = vectorize(post_id, prompt)
-        result.update({post_id, message})
+        result.update({post_id: message})
         print("Processed post id: " + post_id)
     
     output.write(json.dumps(result))
