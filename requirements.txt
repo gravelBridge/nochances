@@ -3,6 +3,12 @@ openai
 zstandard
 datetime
 python-dotenv
+transformers
+pandas
+scikit-learn
+matplotlib
+numpy
+torch
 joblib
 seaborn
 tensorflow
