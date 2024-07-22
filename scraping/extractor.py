@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 import time
 import zstandard
-import logging.handlers
+import logging
 
 # Set up logging
 log = logging.getLogger("bot")
@@ -15,11 +15,6 @@ log_formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
 log_str_handler = logging.StreamHandler()
 log_str_handler.setFormatter(log_formatter)
 log.addHandler(log_str_handler)
-if not os.path.exists("logs"):
-    os.makedirs("logs")
-log_file_handler = logging.handlers.RotatingFileHandler(os.path.join("logs", "bot.log"), maxBytes=1024*1024*16, backupCount=5)
-log_file_handler.setFormatter(log_formatter)
-log.addHandler(log_file_handler)
 
 # Load environment variables
 load_dotenv()
@@ -34,11 +29,11 @@ reddit = praw.Reddit(
 subreddit = reddit.subreddit("collegeresults")
 
 # File paths
-zst_input_file = r"collegeresults_submissions.zst"
+zst_input_file = r"/Users/symphony/Desktop/nochances/scraping/collegeresults_submissions.zst"
 output_file = r"combined_collegeresults_data.json"
 
 # Date range
-from_date = datetime.strptime("2022-01-01", "%Y-%m-%d")
+from_date = datetime.strptime("2000-01-01", "%Y-%m-%d")
 to_date = datetime.strptime("2030-12-31", "%Y-%m-%d")
 
 def fetch_posts(max_posts=2000):
