@@ -5,7 +5,7 @@ from sklearn.impute import SimpleImputer
 from imblearn.over_sampling import SMOTE
 import json
 
-def load_data(file_path):
+def load_data(file_path, inference=False):
     data = []
     labels = []
     with open(file_path, 'r') as file:
@@ -22,12 +22,13 @@ def load_data(file_path):
                         value = int(value)
                     features.append(value)
             
-            accept_rate = features.pop()  # accept_rate is the last item
+            if not inference:
+                accept_rate = features.pop()  # accept_rate is the last item
+                labels.append(accept_rate)
             
             data.append(features)
-            labels.append(accept_rate)
     
-    return np.array(data), np.array(labels)
+    return np.array(data), np.array(labels) if not inference else None
 
 def feature_engineering(X):
     # Original features

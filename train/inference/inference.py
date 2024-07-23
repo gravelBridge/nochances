@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 import sys
 import os
+import tensorflow as tf
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -53,7 +54,6 @@ JSON_SCHEMAS = {
         "languages": "Integer: Number of languages proficient in (including native). Count only if mentioned. Proficiency should be at conversational level or above. If not mentioned, use 1. Example: 1 (if not mentioned)",
         "special_talents": "Integer: 0 = None, 1 = School/local (e.g., lead in school play), 2 = Regional (e.g., first chair in regional orchestra), 3 = National (e.g., national chess champion), 4 = International (e.g., junior Olympian). Use highest level achieved. If multiple talents, use highest. Example: 2 for All-State Orchestra",
         "hooks": "Integer: Number of significant 'hooks' (e.g., recruited athlete, development case, child of faculty, low-income, first-gen, URM). Count each distinct hook. Example: 1 for low-income status",
-        "accept_rate": "Integer: Selectivity of most selective accepted school. 0 = <5% (e.g., Harvard, Stanford, MIT), 1 = 5-15% (e.g., Northwestern, Cornell), 2 = 15-40% (e.g., UC Davis, Boston University), 3 = >40% (e.g., ASU) or Open Admission. Use most recent publicly available data. Example: 0 for Harvard"
     },
     "ecs": {
         "nat-int": "Integer: Number of National/International Activities in notable position. 'Notable' means leadership role, significant achievement, or sustained participation (>1 year). Count each distinct activity. Example: 1 for participation in a national-level orchestra",
@@ -126,30 +126,29 @@ def process_post():
 process_post()
 
 def main():
-    # Load the saved model and scaler
-    model = joblib.load('models/best_model_xgb.joblib')
+    # Load the saved models and scaler
+    xgb_model = joblib.load('models/best_model_xgb.joblib')
+    nn_model = tf.keras.models.load_model('models/best_model_nn.keras')
     scaler = joblib.load('models/scaler.joblib')
     
     # Load and preprocess the input data
-    X, actual_accept_rate = load_data('train/inference/gpt-4o_output.json')
+    X, _ = load_data('train/inference/gpt-4o_output.json', inference=True)
     X_preprocessed = preprocess_data(X, is_training=False, scaler=scaler)
     
     # Print the shape of X_preprocessed for debugging
     print(f"Shape of preprocessed input: {X_preprocessed.shape}")
     
-    # Make prediction
-    prediction = model.predict(X_preprocessed)[0]
+    # Make predictions
+    xgb_prediction = xgb_model.predict(X_preprocessed)[0]
+    nn_prediction = nn_model.predict(X_preprocessed).flatten()[0]
+    
+    # Ensemble prediction (average of XGBoost and Neural Network)
+    ensemble_prediction = (xgb_prediction + nn_prediction) / 2
     
     # Print results
-    print(f"\nPredicted accept rate: {prediction:.2f}")
-    
-    if actual_accept_rate is not None:
-        if isinstance(actual_accept_rate, np.ndarray):
-            actual_accept_rate = actual_accept_rate[0]
-        print(f"Actual accept rate: {actual_accept_rate:.2f}")
-        print(f"Difference: {abs(prediction - actual_accept_rate):.2f}")
-    else:
-        print("Actual accept rate not provided in the input data.")
+    print(f"\nXGBoost Prediction: {xgb_prediction:.2f}")
+    print(f"Neural Network Prediction: {nn_prediction:.2f}")
+    print(f"Ensemble Prediction: {ensemble_prediction:.2f}")
 
 if __name__ == "__main__":
     main()
