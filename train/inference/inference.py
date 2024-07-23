@@ -1,4 +1,3 @@
-#inference.py
 from openai import OpenAI
 import json
 from dotenv import load_dotenv
@@ -7,6 +6,12 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import joblib
+import sys
+import os
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from preprocessing import load_data, preprocess_data
 
 load_dotenv()
 client = OpenAI()
@@ -120,108 +125,17 @@ def process_post():
 
 process_post()
 
-def load_data(file_path):
-    with open(file_path, 'r') as file:
-        entry = json.loads(file.readline())
-    
-    features = []
-    for category, values in entry.items():
-        for key, value in values.items():
-            if isinstance(value, str) and value.isdigit():
-                value = int(value)
-            features.append(value)
-    
-    accept_rate = None
-    if 'accept_rate' in entry['basic_info']:
-        accept_rate = features.pop(17)  # accept_rate is at index 17
-    
-    return np.array([features]), accept_rate
-
-def feature_engineering(X):
-    df = pd.DataFrame(X, columns=[
-        'ethnicity', 'gender', 'income_bracket', 'type_school', 'app_round', 'gpa', 'ap_ib_courses',
-        'ap_ib_scores', 'test_score', 'location', 'state_status', 'legacy', 'intended_major',
-        'first_gen', 'languages', 'special_talents', 'hooks', 'nat_int', 'reg', 'local',
-        'volunteering', 'ent', 'intern', 'add', 'res', 'sports', 'work_exp', 'leadership',
-        'community_impact', 'ec_years', 'int_awards', 'nat_awards', 'state_awards', 'local_awards', 'other_awards'
-    ])
-    
-    print("Original features:", df.columns.tolist())
-    print("Number of original features:", len(df.columns))
-    
-    # Interaction terms
-    df['gpa_test_score'] = df['gpa'] * df['test_score']
-    df['ap_ib_total'] = df['ap_ib_courses'] * df['ap_ib_scores']
-    df['income_first_gen'] = df['income_bracket'] * df['first_gen']
-    
-    # Aggregated features
-    df['total_awards'] = df['int_awards'] + df['nat_awards'] + df['state_awards'] + df['local_awards'] + df['other_awards']
-    df['total_ecs'] = df['nat_int'] + df['reg'] + df['local'] + df['volunteering'] + df['ent'] + df['intern'] + df['add'] + df['res'] + df['sports'] + df['work_exp']
-    
-    # Polynomial features for important columns
-    for col in ['gpa', 'test_score', 'ap_ib_total', 'total_awards', 'total_ecs']:
-        df[f'{col}_squared'] = df[col] ** 2
-    
-    # Normalize ec_years by total_ecs
-    df['avg_ec_years'] = df['ec_years'] / (df['total_ecs'] + 1)  # Add 1 to avoid division by zero
-    
-    print("Features after engineering:", df.columns.tolist())
-    print("Number of features after engineering:", len(df.columns))
-    
-    # Encoding categorical variables
-    # Define all possible categories for each variable
-    ethnicity_categories = [0, 1]
-    gender_categories = [0, 1, 2]
-    type_school_categories = [0, 1, 2, 3, 4]
-    location_categories = [0, 1, 2]
-
-    # One-hot encode with all possible categories
-    df = pd.get_dummies(df, columns=['ethnicity', 'gender', 'type_school', 'location'])
-    
-    # Ensure all categories are present
-    for cat in ethnicity_categories:
-        if f'ethnicity_{cat}' not in df.columns:
-            df[f'ethnicity_{cat}'] = 0
-    for cat in gender_categories:
-        if f'gender_{cat}' not in df.columns:
-            df[f'gender_{cat}'] = 0
-    for cat in type_school_categories:
-        if f'type_school_{cat}' not in df.columns:
-            df[f'type_school_{cat}'] = 0
-    for cat in location_categories:
-        if f'location_{cat}' not in df.columns:
-            df[f'location_{cat}'] = 0
-    
-    print("Features after one-hot encoding:", df.columns.tolist())
-    print("Number of features after one-hot encoding:", len(df.columns))
-    
-    return df
-
 def main():
     # Load the saved model and scaler
     model = joblib.load('models/best_model_xgb.joblib')
     scaler = joblib.load('models/scaler.joblib')
     
-    print("Number of features expected by scaler:", scaler.n_features_in_)
-    
     # Load and preprocess the input data
     X, actual_accept_rate = load_data('train/inference/gpt-4o_output.json')
-    X = feature_engineering(X)
-    
-    print("\nFinal number of features:", X.shape[1])
-    print("Final feature names:", X.columns.tolist())
-    
-    # Scale the features
-    try:
-        X_scaled = scaler.transform(X)
-    except ValueError as e:
-        print(f"Error during scaling: {str(e)}")
-        print(f"Number of features in scaler: {scaler.n_features_in_}")
-        print(f"Number of features in current data: {X.shape[1]}")
-        return
+    X_preprocessed, _ = preprocess_data(X, is_training=False)
     
     # Make prediction
-    prediction = model.predict(X_scaled)[0]
+    prediction = model.predict(X_preprocessed)[0]
     
     # Print results
     print(f"\nPredicted accept rate: {prediction:.2f}")
