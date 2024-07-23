@@ -28,17 +28,17 @@ JSON_SCHEMAS = {
     "basic_info": {
         "ethnicity": "Integer: 0 = Underrepresented Minority in College (Black, Hispanic, Native American, Pacific Islander), 1 = Not Underrepresented Minority in College (White, Asian, Other). If multiple ethnicities are listed, use the one that would be considered underrepresented if applicable. Example: 1 for East Asian",
         "gender": "Integer: 0 = Male, 1 = Female, 2 = Other/Non-binary. If gender is not stated, do not assume based on other information, use 2 in this case. Example: 1 for Female",
-        "income_bracket": "Integer: Family annual income pre-tax. 0 = $0-30k, 1 = $30k-60k, 2 = $60k-100k, 3 = $100k-200k, 4 = $200k+. If a range is given, use the middle value. If 'upper middle class' is mentioned without specifics, use 3. If 'lower income' or similar is mentioned without specifics, use 1. Example: 0 for '<30K'",
-        "type_school": "Integer: Most selective accepted school type. 0 = STEM (e.g., MIT, Caltech), 1 = Liberal Arts (e.g., Williams, Amherst), 2 = Art/Design (e.g., RISD, Parsons), 3 = Music Conservatory (e.g., Juilliard, Berklee), 4 = Other specialized (e.g., military academies). For universities known for multiple areas, choose based on the applicant's intended major. Example: 0 for Harvard (considered STEM-strong) if applying for Biochemistry",
-        "app_round": "Integer: For most selective accepted school. 0 = Early Decision/Action, 1 = Regular Decision. If not specified, assume 1. Example: 1 for Regular Decision (if not specified)",
+        "income_bracket": "Integer: Family annual income pre-tax. 0 = $0-30k, 1 = $30k-60k, 2 = $60k-100k, 3 = $100k-200k, 4 = $200k+. If a range is given, use the middle value. If 'upper middle class' is mentioned without specifics, use 3. If 'lower income' or similar is mentioned without specifics, use 1. If not specified at all, use your expert knowledge to judge their activties and the costs associated to best guess their income bracket. Example: 0 for '<30K'",
+        "type_school": "Integer: Most desired/first ranked(school said first) dream school type. 0 = STEM (e.g., MIT, Caltech), 1 = Liberal Arts (e.g., Williams, Amherst), 2 = Art/Design (e.g., RISD, Parsons), 3 = Music Conservatory (e.g., Juilliard, Berklee), 4 = Other specialized (e.g., military academies). For universities known for multiple areas, choose based on the applicant's intended major. Example: 0 for Harvard (considered STEM-strong) if applying for Biochemistry",
+        "app_round": "Integer: For most desired/first ranked(school said first) dream school. 0 = Early Decision/Action, 1 = Regular Decision. If not specified, assume 1. Example: 1 for Regular Decision (if not specified)",
         "gpa": "Integer: Unweighted 4.0 scale. 0 = Below 2.5, 1 = 2.5-2.99, 2 = 3.0-3.49, 3 = 3.5-3.79, 4 = 3.8-4.0. If only weighted GPA is given, estimate unweighted by subtracting 0.5 (minimum 0), this is still above 4.0, just use 4. If no GPA is given but class rank is top 10%, use 4. Example: 4 for 4.0 UW",
         "ap-ib-courses": "Integer: Total number of AP and IB courses taken (exclude honors). If only total number of APs passed is given, use that number. Example: 10 for 10 APs",
         "ap-ib-scores": "Integer: 0 = No scores, 1 = Avg below 3(AP)/4(IB), 2 = Avg 3-3.9(AP)/4-4.9(IB), 3 = Avg 4-4.9(AP)/5-5.9(IB), 4 = Avg 5(AP)/6-7(IB). Calculate the average if multiple scores are given. If only some scores are mentioned, assume the others are average (3 for AP, 4 for IB). Example: 3 for mostly 4s and 5s on AP exams",
         "test-score": "Integer: 0 = No score/below 1000 SAT/20 ACT, 1 = 1000-1190 SAT/20-23 ACT, 2 = 1200-1390 SAT/24-29 ACT, 3 = 1400-1490 SAT/30-33 ACT, 4 = 1500+ SAT/34+ ACT. If both SAT and ACT are given, use the higher equivalent. If superscored, use that. Example: 4 for 1570 SAT or 35 ACT",
         "location": "Integer: 0 = Rural (<10k population), 1 = Suburban (10k-100k), 2 = Urban (>100k). If not explicitly stated, infer from context (e.g., 'small town' = 0, 'suburb of Chicago' = 1). Example: 1 for Suburban",
-        "state-status": "Integer: For most selective accepted school. 0 = In Same State, 1 = Not In Same State. If not explicitly stated, infer from context (e.g., if applying to many out-of-state schools, assume 1). Example: 1 for out-of-state (if not specified)",
-        "legacy": "Integer: For most selective accepted school. 0 = Legacy, 1 = Non-Legacy. Legacy includes parents, grandparents, or siblings who attended. If not mentioned, assume 1. Example: 1 for Non-Legacy (if not specified)",
-        "intended_major": """Integer 1-10: Competitiveness of major at most selective accepted school. Consider both the competitiveness of the major in general and at the specific school. Examples:
+        "state-status": "Integer: For most desired/first ranked(school said first) dream school. 0 = In Same State, 1 = Not In Same State. If not explicitly stated, infer from context (e.g., if applying to many out-of-state schools, assume 1). Example: 1 for out-of-state (if not specified)",
+        "legacy": "Integer: Are they legacy at their most desired/first ranked(school said first) dream school. 0 = Legacy, 1 = Non-Legacy. Legacy includes parents, grandparents, or siblings who attended. If not mentioned, assume 1. Example: 1 for Non-Legacy (if not specified)",
+        "intended_major": """Integer 1-10: Competitiveness of major at most desired/first ranked(school said first) dream school. Consider both the competitiveness of the major in general and at the specific school. Examples:
             1 = Least competitive (e.g., Liberal Studies at NYU)
             2 = Very low competitiveness (e.g., Anthropology at UC Berkeley)
             3 = Low competitiveness (e.g., English at UCLA)
@@ -53,21 +53,118 @@ JSON_SCHEMAS = {
         "first_gen": "Integer: 0 = Not first-generation college student, 1 = First-generation college student. First-gen means neither parent has a 4-year degree. If not explicitly stated, assume 0. Example: 0 (if not mentioned)",
         "languages": "Integer: Number of languages proficient in (including native). Count only if mentioned. Proficiency should be at conversational level or above. If not mentioned, use 1. Example: 1 (if not mentioned)",
         "special_talents": "Integer: 0 = None, 1 = School/local (e.g., lead in school play), 2 = Regional (e.g., first chair in regional orchestra), 3 = National (e.g., national chess champion), 4 = International (e.g., junior Olympian). Use highest level achieved. If multiple talents, use highest. Example: 2 for All-State Orchestra",
-        "hooks": "Integer: Number of significant 'hooks' (e.g., recruited athlete, development case, child of faculty, low-income, first-gen, URM). Count each distinct hook. Example: 1 for low-income status",
+        "hooks": """Integer: Number of significant factors that may provide a notable advantage in the college admissions process. Guidelines:
+            1) Include:
+               - Underrepresented Minority (URM) status in higher education (Black, Hispanic, Native American, Pacific Islander)
+               - First-generation college student (neither parent has a 4-year degree)
+               - Low-income background (generally below $65,000/year for a family of four, but may vary by institution)
+               - Recruited athlete (official recruitment by college coaches, not just participation in high school sports)
+               - Legacy status (parents or siblings attended the most selective school applied to)
+               - Child of faculty/staff at the most selective school applied to
+               - Significant hardship or adversity overcome (e.g., refugee status, homelessness, major health challenges)
+               - Exceptional talent or achievement (e.g., published author, Olympic athlete, Carnegie Hall performer)
+            2) Do not include:
+               - Common experiences or challenges (e.g., divorce of parents, typical part-time job)
+               - General diversity factors that don't significantly impact admissions (e.g., being left-handed, from a specific state)
+               - Factors already accounted for in other categories (e.g., academic achievements, standard extracurricular activities, legacy)
+            3) Counting:
+               - Count each distinct hook as 1
+               - Multiple hooks can be counted (e.g., URM status and first-gen would count as 2)
+               - For exceptional talents/achievements, only count if truly extraordinary and likely to significantly impact admissions
+            4) If no hooks are explicitly mentioned or evident from the application, use 0
+            Examples: 
+               - 1 for low-income status
+               - 2 for being both a first-generation college student and a recruited athlete
+               - 3 for URM status, child of faculty, and overcoming a major health challenge"""
     },
     "ecs": {
-        "nat-int": "Integer: Number of National/International Activities in notable position. 'Notable' means leadership role, significant achievement, or sustained participation (>1 year). Count each distinct activity. Example: 1 for participation in a national-level orchestra",
-        "reg": "Integer: Number of State/Regional Activities in notable position. 'Notable' as defined above. Count each distinct activity. Example: 1 for All-State Symphony Orchestra",
-        "local": "Integer: Number of Local/School Activities/Clubs in notable position. 'Notable' as defined above. Count each distinct activity. Example: 3 for being president of 3 community service clubs",
-        "volunteering": "Integer: Number of distinct Volunteering Activities. Count each organization or cause separately, even if done through school clubs. Example: 1 for 100+ hours of volunteering",
+        "nat-int": """Integer: Number of National or International Activities in notable positions. 'Notable' means:
+            1) Leadership role in a national/international organization
+            2) Significant achievement at a national/international level
+            3) Sustained participation (>1 year) in a highly selective national/international program
+        Examples:
+            - Officer in a national student organization
+            - Participant in a highly selective international summer program (e.g., RSI, TASP)
+            - Member of a national sports team or youth orchestra
+            - Intern at a major national/international company or research lab
+        Do not include:
+            - One-time participation in a national competition without significant achievement
+            - Online courses or programs without rigorous selection processes
+            - Local chapters of national organizations (count these in 'local')
+        Count each distinct activity separately.""",
+        "reg": """Integer: Number of State or Regional Activities in notable positions. 'Notable' means:
+            1) Leadership role in a state/regional organization
+            2) Significant achievement at a state/regional level
+            3) Sustained participation (>1 year) in a selective state/regional program
+        Examples:
+            - All-State Orchestra or Choir member
+            - Captain of a regional sports team
+            - Leader in state-wide student government or youth organization
+            - Participant in a selective state-wide academic program
+        Do not include:
+            - One-time participation in a state competition without placing
+            - Activities already counted in 'nat-int'
+        Count each distinct activity separately.""",
+        "local": """Integer: Number of Local or School Activities/Clubs in notable positions. 'Notable' means:
+            1) Leadership role in a school club or local organization
+            2) Significant achievement or recognition at the school/local level
+            3) Sustained participation (>1 year) with increasing responsibility
+        Examples:
+            - President, Vice President, or founder of a school club
+            - Captain of a school sports team
+            - Editor of school newspaper or literary magazine
+            - Lead role in school theater productions
+        Do not include:
+            - General membership in clubs without leadership roles or significant contributions
+            - One-time participation in local events without notable achievement
+            - Activities already counted in 'nat-int' or 'reg'
+        Count each distinct activity separately.""",
+        "volunteering": "Integer: Number of distinct Volunteering Activities. Count each organization or cause separately. Example: 2 for volunteering at a dog shelter and a local library",
         "ent": "Integer: Number of Entrepreneurial ventures (founded/co-founded). Include both for-profit and non-profit initiatives. Example: 0 (if not mentioned)",
         "intern": "Integer: Number of internships. Include both paid and unpaid. Count each distinct internship, even if at the same company. Example: 0 (if not mentioned)",
-        "add": "Integer: Number of classes taken outside high school curriculum. Include college courses, online certifications, etc. Count each distinct course. Example: 0 (if not mentioned)",
-        "res": "Integer: Number of research projects or papers completed. Include both independent and mentored research. Count each distinct project. Example: 1 for Neuroscience Student Researcher",
+        "add": """Integer: Number of significant academic classes or programs taken outside the standard high school curriculum. Guidelines:
+            1) Include:
+               - College-level courses taken at a university or community college
+               - Accredited online college courses (e.g., through edX, Coursera if verified/certificate track)
+               - Structured summer academic programs at recognized institutions
+               - Formal, multi-week academic programs (e.g., intensive language programs, coding bootcamps)
+            2) Do not include:
+               - AP or IB classes (these are counted elsewhere)
+               - Regular high school classes, even if advanced
+               - Brief workshops or one-day seminars
+               - Informal, self-guided online learning
+            3) Counting:
+               - Count each semester-long course or equivalent as 1
+               - For year-long courses, count as 2
+               - For intensive summer programs, count each distinct program as 1
+               - If only a total number of college credits is given, divide by 3 and round down to estimate number of courses
+            4) If not explicitly mentioned in the application, use 0
+            Example: 3 for taking two semester-long college math courses and completing a 6-week summer coding bootcamp""",
+        "res": """Integer: Number of significant research projects or papers that are completed or substantively in-progress. Guidelines:
+            1) Include:
+               - Independent research projects with clear objectives and methodology
+               - Collaborative research as part of a team (e.g., in a university lab or group)
+               - Mentored research programs (e.g., science fair projects with professional mentorship)
+               - Published or unpublished papers resulting from research
+               - Ongoing research projects that have produced preliminary results or a defined research plan
+            2) Do not include:
+               - Brief (less than a month) research experiences or shadowing
+               - School assignments or projects that are part of regular coursework
+               - Vague mentions of 'interest in research' without specific projects
+            3) Counting:
+               - Count each distinct research project or paper as 1
+               - For ongoing multi-year projects, still count as 1 unless it has resulted in multiple distinct papers or presentations
+               - If a single project results in both a paper and a presentation, count it as 1
+               - Summer research programs count as 1, unless they resulted in multiple distinct projects
+            4) If research experience is not explicitly mentioned in the application, use 0
+            Examples: 
+               - 1 for a year-long neuroscience research project in a university lab
+               - 2 for an independent ecology study resulting in a paper, plus a summer research program in chemistry
+               - 3 for two published papers from different projects, plus an ongoing research project with preliminary results""",
         "sports": "Integer: Number of sports teams (e.g., JV, Varsity). Count each sport separately, even if played multiple years. Example: 0 (if not mentioned)",
         "work_exp": "Integer: Number of part-time jobs or significant family responsibilities. Count each distinct job or responsibility. Example: 1 for working as a private violin tutor",
         "leadership": "Integer: Total number of leadership positions across all activities. Include positions like president, vice president, captain, editor, etc. Example: 3 for being president of 3 clubs",
-        "community_impact": """Integer: Judge based on scope, duration, and measurable impact of activities. Examples:
+        "community_impact": """Integer: Judge based on scope, duration, and measurable impact of all activities combined. Examples:
             0 = None (no community service or impact mentioned)
             1 = Minimal (e.g., occasional volunteering at local food bank, participating in school cleanup day)
             2 = Moderate (e.g., regular volunteering at hospital, leading a school recycling program)
@@ -76,11 +173,11 @@ JSON_SCHEMAS = {
         "ec_years": "Integer: Average years of involvement across significant extracurriculars. Sum total years of all activities and divide by number of activities. Round to nearest whole number. Example: 4 if involved in most activities for all 4 years of high school"
     },
     "awards": {
-        "int": "Integer: Number of International Awards (1st-10th place or equivalent). Include olympiads, global competitions, etc. Count each distinct award. If an award qualifies for multiple categories, only count it here. Example: 1 for International Math Olympiad Silver Medal",
-        "nat": "Integer: Number of National Awards (1st-10th place or equivalent). Include nationwide competitions, national merit, etc. Count each distinct award. Only count here if not already counted in 'int'. Example: 1 for National Merit Finalist",
-        "state": "Integer: Number of State/Regional Awards (1st-10th place or equivalent). Include state competitions, regional recognitions, etc. Count each distinct award. Only count here if not already counted in 'int' or 'nat'. Example: 1 for All-State Orchestra (4 years counts as 1 award)",
-        "local": "Integer: Number of Local/School Awards (1st-3rd place or equivalent). Include school competitions, local recognitions, etc. Count each distinct award. Only count here if not already counted in higher categories. Example: 1 for valedictorian",
-        "other": "Integer: Number of Honorable Mentions or Participation Awards (any level, no duplicates). Include recognitions that don't fit in above categories or place below 3rd in local competitions. Count each distinct recognition. Example: 1 for Honorable Mention in a national essay contest"
+        "int": "Integer: Number of top-tier International Awards. Only include awards for placing 1st-10th (or equivalent prestigious recognition) in global competitions with participants from multiple countries. Examples: International Math Olympiad medalist, International Science and Engineering Fair (ISEF) Grand Award winner. Do not include qualifications or lower-level achievements in international competitions (e.g., USACO Bronze/Silver/Gold, International Chemistry Olympiad participant without placing).",
+        "nat": "Integer: Number of National Awards (1st-10th place or equivalent national recognition). Include nationwide competitions, national merit, etc. Examples: National Merit Finalist, USAMO qualifier, USACO Platinum, Presidential Scholar. Do not include awards already counted in 'int'.",
+        "state": "Integer: Number of State/Regional Awards (1st-10th place or equivalent). Include state competitions, regional recognitions, etc. Examples: All-State Orchestra, State Science Fair winner, Regional Math Olympiad top performer. Do not include awards already counted in 'int' or 'nat'.",
+        "local": "Integer: Number of significant Local/School Awards (typically 1st-3rd place). Include school competitions, local recognitions, etc. Examples: Valedictorian, School Science Fair winner, District Math Competition top 3. Do not include awards already counted in higher categories.",
+        "other": "Integer: Number of Honorable Mentions, Participation Awards, or minor recognitions at any level. Include recognitions that don't fit in above categories or place below 3rd in local competitions. Examples: AP Scholar, Honor Roll, Participation in USACO Bronze/Silver without advancing, School 'Student of the Month'."
     }
 }
 

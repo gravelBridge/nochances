@@ -1,110 +1,91 @@
-3.8+|1500+/34+|Bus/Fin
-Demographics:
+Demographics: Male, White, CA, Semi-Competitive School, hooks (legacy to penn/berkeley dont think it matters)
 
-Male, Hispanic, and white, FL, Large public (3-4k), URM (my essays didn't focus on this tbh)
+Intended Major(s): Comp Sci / Data Science / Biomedical Data Science
 
-Middle class, EFC around 15-25k for many top schools on my list
+ACT/SAT/SAT II: 1580 (800/780)
 
-Intended Major(s):
+UW/W GPA and Rank: 4.0 / 4.35
 
-Finance (if they had an undergrad business school) or economics
-
-Standardized test scores:
-
-1540 super score (770, 770)
-
-UW/W GPA and Rank:
-
-3.97 UW (only 1 b), 5.35 W(on a 6.0 scale)
-
-Rank 3/875 (top 0.3%)
-
-Coursework: AP/IB/Dual Enrollment classes, AP/IB scores, etc
-
-19 AP Classes, 8 Dual Enrollment
+Coursework: Taking the IB diploma and multi-variable calc duel enrollment
 
 Awards:
 
-Top 25/380 overall at a [National debate tournament, not NSDA or TOC) 2022 (11th) (After early apps, I won 4th at said tournament, so for RD apps this was replaced)
+USACO Gold
 
-Tournament of Champions Bid, earned by making the semi-finals at Sunvite, a National Circuit tournament in Ft. Lauderdale, FL. (11th)
+Local Scholarship
 
-National Qualifier and Attendee of the 2023 NSDA National Speech and Debate Tournament in Phoenix, AZ (11th) (Replaced during RD apps when I got NSDA Academic All American)
-
-Quarter-finalist in World Schools Debate at the 2023 Florida Forensics League Varsity State tournament (FL State Championship), received an individual 2nd best speaker award. (11th)
-
-Champion of the Florida State Beta Convention academic competition in Science (10th)
+CSF
 
 Extracurriculars:
 
-Debate - President of the team (Grew from 20->50 members), in charge of a lot (ex. running meetings, fundraising, planning tournaments to attend, etc.) except the actual tournament logistics 10-12th grade, President 11-12
+Research at Stanford -- 3 publications using AI and physics modeling (skin cancer, using PDEs to model lungs, and using PDEs to model breast mammographies)
 
-Got my team competing on the national circuit, helped coach myself and 2 others to a TOC Bid
+High School Research -- Lead a research team of 6 people, we're applying to Neurips high school track. If rejected we can probably submit to some lower journal. Its on AI segmenting microplastics in water and we used a GAN to generate synthetic data.
 
-Fundraised close to 10 thousand dollars, allowed the program to be cost-free for most tournaments, really helped with promoting accessibility in the event
+Coding Club Co-president/founder -- 30 members focusing on USACO, research, and teaching
 
-DECA - President, 1st-year chapter, 40+ interested members. Can't say much besides that we prepare our members for competition and the workforce by doing things like resume-building and mock interviews
+Volunteer at a local non-profit teaching kids from underserved communities Python
 
-Varsity Lacrosse 9-12th grade, team captain 11th and 12th grade, started most of my HS career
+Health Care + AI podcast -- Interviewed 10+ healthcare professionals and AI professionals to get a better understanding about how AI will affect the healthcare industry. Organized the recordings into a podcast series on a website.
 
-Beta Club, a merit-based club where I did community service and competed in the yearly convention
+COSMOS Summer -- AI Cohort
 
-Mu Alpha Theta member, volunteered by tutoring peers in math after school
+Stanford Pre-Collegiate Summer -- AI Cohort
 
-Made around 3 thousand through side hustles like reselling sneakers/ memorabilia and sports photography (listing these as 2 separate EC's)
+Part-time job -- After-school I run a class at a local elementary school on coding, once a week.
 
-Essays/LORs/Other: (Optionally, guess how strong these are and include any other relevant information or circumstances.)
+Summer Camp Counselor -- Teach kids gymnastics during the summer
 
-Got one from my Calc teacher who I had for 2 years now, I genuinely enjoy learning calc and we are friendly with each other
+3 Varsity Sports -- Cross Country, Soccer + club soccer, and Badminton -- All 4 years
 
-The second LOR is from a teacher that I had for 3 years in 2 AP Histories and AP Macro. Known him for 3 years, usually got the highest scores on his tests in all 3 classes, and we talk about politics and philosophy occasionally.
+Essays/LORs/Other: 
 
-I got a 3rd optional letter from my debate coach for regular decision applications, who knows me better than any other teacher
+Essay: Probably going to be on how research shifted my thinking from logical and risk adverse to more a more creative mindset and seeing how things are interconnected.
 
-Both should be very good as I am one of the best students academically for both of those teachers, and I have a strong personal relationship with them in class.
+LORs:
 
-Schools: List of colleges, ED/EA/RD, etc
+History Teacher: The class was known to be pretty hard but I did really well in it even though I'm not usually the best at history. He was also my EE (extended essay for IB with 4000 words) superviser so he knows I like history because we meet a lot. (8/10)
 
-EA:
+Math Teacher: Wrote my letter of rec in the past for cosmos I think he is a good writer. He like that for my math IA I 3D printed out the thing I was modeling. (8/10
 
-Georgetown MCB: Deferred -> Waitlisted (Declined spot)
+Stanford Professor: Worked with him for 3 years should be pretty good (9/10)
 
-Notre Dame: ACCEPTED!!! (merit scholarship + Business Honors Program as a freshman) -> attending
+Schools: 
 
-UChicago: >!Deferred ->!< Rejected (opened in Chicago during a college visit lol)
+Dream:
 
-Florida State: ACCEPTED!!! (Max Merit Scholarship + Honors College)
+Stanford (REA)
 
-USC Marshall: ACCEPTED!!! (No merit sadly)
+Brown
 
-RD:
+Penn
 
-Harvard: Rejected
+Harvard
 
-Yale: Rejected
+Yale
 
-Princeton: Rejected
+Reach:
 
-Brown: Rejected
+Berkeley
 
-Columbia: Rejected
+NYU
 
-Dartmouth: Rejected
+UCLA
 
-Cornell: Rejected
+Georgia Tech
 
-Florida: ACCEPTED!!! + Honors College and URSP invite
+Target:
 
-UPenn Wharton: Rejected
+UCSB
 
-Duke: Rejected
+UNCCH
 
-Williams: Waitlisted (Declined spot)
+UIUC
 
-Northwestern: ACCEPTED!!!
+Safety:
 
-Middlebury: Waitlisted (Declined spot)
+U of Maryland
 
-Notes:
+Cal Poly
 
-I will say, there was a bit of luck involved as I was behind on extracurriculars, and rushing to catch up was time-consuming. For my common app essay, I edited it over a dozen times, going through 2 topics before reaching the final one. I am happy to share any of my supplementals/ personal statement if it helps.
+UC Davis

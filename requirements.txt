@@ -4,3 +4,4 @@ zstandard
 datetime
 python-dotenv
 joblib
+seaborn
