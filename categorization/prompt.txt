@@ -1,3 +1,91 @@
-You are an expert in data extraction, categorization and US College Admissions. You have an expert level knowledge of all aspects of the US College Admissions System. Your output will be used to train a machine learning model, so make sure to be accurate, precise, and only output valid JSON.
+3.8+|1500+/34+|Art/Hum
+Demographics
 
-You analyze a Reddit Post, and give JSON information in the specified format about the post.
+Indian Male, Boston area
+
+Hooks: none
+
+Major: Physics and Computer Science
+
+Courses Rigor - 13 APs total
+
+Freshman Year: 7 Honors
+
+Sophomore Year: 3 Honors, AP Calc AB, AP CSA, AP Phys 1
+
+Junior Year: 1 Honors, AP Lang, APUSH, AP Calc BC, AP Macro, AP Phys 2, AP Phys C (E&M + Mech)
+
+Senior Year: 1 Honors, AP Psych, AP Stats, AP Spanish, APES
+
+GPA
+
+School does a weird weighted 4.66 scale. 4.03/4.66
+
+UC GPA: 3.90 UW, 4.50 W, 4.17 W Capped
+
+Rank 21 / 265 (top 10%)
+
+SAT
+
+1540 - 790 Math 750 Reading
+
+Extracurriculars
+
+President. of Science National Honors Society
+
+NHS
+
+Started a robotics summer camp
+
+Did astrophysics research at Harvard
+
+FRC Robotics - Software Lead (Biggest time commitment)
+
+Mentored a local FLL Robotics team
+
+Volunteered at local FRC Competitions
+
+Contributed to multiple open-source projects
+
+AAPI club, Debate club, Math League, JV Track/XC, just some filler
+
+Awards:
+
+AP Scholar with Distinction
+
+High Honor Rolls, Student of the Terms, and some other pretty prestigious school awards
+
+LORs
+
+Physics Teacher 10/10 - We were very close, he landed me my research opportunity
+
+Spanish Teacher - 8/10 - He liked me, but wouldn't be able to speak on my ECs really
+
+Professor I worked with - 7/10 - Didn't know me too well but the work I did was good
+
+Essays
+
+Personal statement was pretty good I'd say, lots of revisions, my English teacher really liked it.
+
+Supplementals were all written within 48 hours of their due dates, only gave them quick proofreads and sent them off; this might have the weakest part of my apps.
+
+EA:
+
+UMass Amherst -> Waitlisted -> Rejected (wtf)
+USC -> Deferred -> Rejected
+Suffolk -> Accepted + Honors + Scholarship
+WPI -> Accepted + Scholarship
+Northeastern -> Accepted + Honors + Scholarship (Attending)
+
+RD:
+
+BU -> Waitlisted -> Rejected
+Carnegie Mellon -> Waitlisted -> Rejected
+UIUC -> Waitlisted -> Rejected
+Cornell -> Waitlisted -> Withdrew (Forgot to write the waitlist essay)
+Harvard -> Rejected
+UPenn -> Rejected
+Yale -> Rejected
+UCLA -> Waitlisted -> Rejected
+UC Berkeley -> Waitlisted -> Rejected
+UCSB -> Accepted (my second choice if I didn't have NEU)

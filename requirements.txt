@@ -3,3 +3,4 @@ openai
 zstandard
 datetime
 python-dotenv
+joblib
