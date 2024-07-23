@@ -5,7 +5,6 @@ from sklearn.impute import SimpleImputer
 from imblearn.over_sampling import SMOTE
 import json
 
-
 def load_data(file_path, inference=False):
     data = []
     labels = []
