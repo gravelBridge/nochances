@@ -26,46 +26,46 @@ def parse_and_append(json_string, filename):
 
 JSON_SCHEMAS = {
     "basic_info": {
-        "ethnicity": "One integer number where 0: Underrepresented Minority (Black, Hispanic, Native American, Pacific Islander) or 1: Not Underrepresented Minority (White, Asian, Other)",
-        "gender": "One integer number where 0: Male, 1: Female, or 2: Other/Non-binary",
-        "income_bracket": "Family annual income pre-tax One integer number where 0: $0-30,000, 1: $30,001-60,000, 2: $60,001-100,000, 3: $100,001-200,000, 4: $200,001+ If not specified, make your best guess based on what they do",
-        "type_school": "Out of all the schools they were accepted into, what type of school is the most selective accepted school? One integer number where 0: STEM-focused institution, 1: Liberal Arts institution, 2: Art/Design school, 3: Music Conservatory, 4: Other specialized institution",
-        "app_round": "For the most selective school they got in to, which round did they apply in? One integer number where 0: Early Decision/Early Action, 1: Regular Decision",
-        "gpa": "Unweighted, 4.0 scale, estimate in a 4.0 UW scale if not available in this format One integer number where 0: Below 2.5, 1: 2.5 to 2.99, 2: 3.0 to 3.49, 3: 3.5 to 3.79, 4: 3.8 to 4.0",
-        "ap-ib-courses": "One integer number where that number is the total number of AP and IB courses taken, only AP and IB, do not include honors",
-        "ap-ib-scores": "One integer number where 0: No AP/IB scores, 1: Average score below 3 (AP) or 4 (IB), 2: Average score 3-3.9 (AP) or 4-4.9 (IB), 3: Average score 4-4.9 (AP) or 5-5.9 (IB), 4: Average score 5 (AP) or 6-7 (IB)",
-        "test-score": "One integer number where 0: No score or below 1000 SAT / 20 ACT, 1: 1000-1190 SAT / 20-23 ACT, 2: 1200-1390 SAT / 24-29 ACT, 3: 1400-1490 SAT / 30-33 ACT, 4: 1500+ SAT / 34+ ACT",
-        "location": "One integer number where 0: Rural (population < 10,000), 1: Suburban (population 10,000 - 100,000), 2: Urban (population > 100,000)",
-        "state-status": "For the most selective school they got in to, do they live in the same state as that school? One integer number where 0: In Same State 1: Not In Same State",
-        "legacy": "For the most selective school they got in to, are they a legacy student at that school? One integer number where 0: Legacy, 1: Non-Legacy",
-        "intended_major": "How competitive is their intended major at the most selective school they got in to on a scale from 1-10 (including 1 and 10)? Where 1 is not at all competitive, like gender studies at MIT, and 10 being CS at MIT. One integer value.",
-        "first_gen": "Is the student a first-generation college student? One integer number where 0: No, 1: Yes If not specified, say 0",
-        "languages": "Number of languages the student is proficient in (including native language). One integer value. If not specified, say 1",
-        "special_talents": "One integer number representing the level of exceptional talent in a specific area (e.g., music, art, specific academic field) where 0: No exceptional talent, 1: School/local level talent, 2: Regional level talent, 3: National level talent, 4: International level talent If not specified, say 0",
-        "hooks": "One integer number representing the number of significant 'hooks' the applicant has (e.g., recruited athlete, development case, child of faculty)",
-        "accept_rate": "For the most selective school the student was accepted in to, how selective is that most selective school they were *accepted* into? One integer number where 0: Highly Selective (acceptance rate <5% (e.g. MIT)), 1: Very Selective (acceptance rate 5-15% (e.g. UCLA)), 2: Selective (acceptance rate 15-40% (e.g. UC Davis)), 3: Minimally Selective (acceptance rate >40% (e.g. UC Santa Cruz/El Camino)) or Open Admission"
+        "ethnicity": "Integer: 0 = Underrepresented Minority in College (Black, Hispanic, Native American, Pacific Islander), 1 = Not Underrepresented Minority in College (White, Asian, Other)",
+        "gender": "Integer: 0 = Male, 1 = Female, 2 = Other/Non-binary",
+        "income_bracket": "Integer: Family annual income pre-tax. 0 = $0-30k, 1 = $30k-60k, 2 = $60k-100k, 3 = $100k-200k, 4 = $200k+. Estimate if not specified.",
+        "type_school": "Integer: Most selective accepted school type. 0 = STEM, 1 = Liberal Arts, 2 = Art/Design, 3 = Music Conservatory, 4 = Other specialized",
+        "app_round": "Integer: For most selective accepted school. 0 = Early Decision/Action, 1 = Regular Decision",
+        "gpa": "Integer: Unweighted 4.0 scale. Estimate conversion to UW 4.0 scale if not specified. 0 = Below 2.5, 1 = 2.5-2.99, 2 = 3.0-3.49, 3 = 3.5-3.79, 4 = 3.8-4.0",
+        "ap-ib-courses": "Integer: Total number of AP and IB courses taken (exclude honors)",
+        "ap-ib-scores": "Integer: 0 = No scores, 1 = Avg below 3(AP)/4(IB), 2 = Avg 3-3.9(AP)/4-4.9(IB), 3 = Avg 4-4.9(AP)/5-5.9(IB), 4 = Avg 5(AP)/6-7(IB)",
+        "test-score": "Integer: 0 = No score/below 1000 SAT/20 ACT, 1 = 1000-1190 SAT/20-23 ACT, 2 = 1200-1390 SAT/24-29 ACT, 3 = 1400-1490 SAT/30-33 ACT, 4 = 1500+ SAT/34+ ACT",
+        "location": "Integer: 0 = Rural (<10k), 1 = Suburban (10k-100k), 2 = Urban (>100k)",
+        "state-status": "Integer: For most selective accepted school. 0 = In Same State, 1 = Not In Same State",
+        "legacy": "Integer: For most selective accepted school. 0 = Legacy, 1 = Non-Legacy",
+        "intended_major": "Integer 1-10: Competitiveness of major at most selective accepted school. 1 = Least competitive (e.g., Gender Studies at MIT), 10 = Most competitive (e.g., CS at MIT)",
+        "first_gen": "Integer: 0 = Not first-generation college student, 1 = First-generation college student. Default to 0 if not specified",
+        "languages": "Integer: Number of languages proficient in (including native). Default to 1 if not specified",
+        "special_talents": "Integer: 0 = None, 1 = School/local (e.g., lead in school play), 2 = Regional (e.g., first chair in regional orchestra), 3 = National (e.g., national chess champion), 4 = International (e.g., junior Olympian). Default to 0 if not specified",
+        "hooks": "Integer: Number of significant 'hooks' (e.g., recruited athlete, development case, child of faculty). Example: 2 for a recruited athlete whose parent is a professor",
+        "accept_rate": "Integer: Selectivity of most selective accepted school. 0 = <5% (e.g., Harvard, MIT), 1 = 5-15% (e.g., UCLA, Cornell), 2 = 15-40% (e.g., UC Davis, Boston University), 3 = >40% (e.g., UC Santa Cruz, Arizona State) or Open Admission"
     },
     "ecs": {
-        "nat-int": "integer Number of National/International Activities where they are in a notable position",
-        "reg": "integer Number of State/Regional Activities where they are in a notable position",
-        "local": "integer Number of Local/School Activties/Clubs where they are in a notable position",
-        "volunteering": "integer Number of Volunteering Activties they do",
-        "ent": "integer Number of Entrepreneurial ventures (founded or co-founded)",
-        "intern": "integer Number of internships",
-        "add": "integer Number of classes taken outside of their high school curriculum",
-        "res": "integer Number of research papers they have completed.",
-        "sports": "integer Number of sports teams they are on, such as JV or Varsity",
-        "work_exp": "integer Number of part-time jobs or significant ongoing family responsibilities",
-        "leadership": "integer Total number of leadership positions held across all activities",
-        "community_impact": "One integer number representing the depth and impact of community involvement where 0: No involvement, 1: Minimal involvement, 2: Moderate involvement, 3: Significant involvement, 4: Exceptional involvement with measurable impact",
-        "ec_years": "One integer number representing the average number of years of involvement across all significant extracurricular activities"
+        "nat-int": "Integer: Number of National/International Activities in notable position. Example: 1 for being president of a national youth organization",
+        "reg": "Integer: Number of State/Regional Activities in notable position. Example: 2 for being captain of a regional debate team and organizing a state-wide science fair",
+        "local": "Integer: Number of Local/School Activities/Clubs in notable position. Example: 3 for being president of school chess club, editor of school newspaper, and lead in school play",
+        "volunteering": "Integer: Number of Volunteering Activities",
+        "ent": "Integer: Number of Entrepreneurial ventures (founded/co-founded)",
+        "intern": "Integer: Number of internships",
+        "add": "Integer: Number of classes taken outside high school curriculum",
+        "res": "Integer: Number of research papers completed",
+        "sports": "Integer: Number of sports teams (e.g., JV, Varsity)",
+        "work_exp": "Integer: Number of part-time jobs or significant family responsibilities",
+        "leadership": "Integer: Total number of leadership positions across all activities",
+        "community_impact": "Integer: 0 = None, 1 = Minimal (e.g., occasional volunteering), 2 = Moderate (e.g., regular volunteering), 3 = Significant (e.g., leading a community project), 4 = Exceptional with measurable impact (e.g., founding a successful non-profit)",
+        "ec_years": "Integer: Average years of involvement across significant extracurriculars. Example: 3 if involved in most activities for 3 years of high school"
     },
     "awards": {
-        "int": "integer Number of International Awards (1st-10th place or equivalent)",
-        "nat": "integer Number of National Awards (1st-10th place or equivalent)",
-        "state": "integer Number of State/Regional Awards (1st-10th place or equivalent)",
-        "local": "integer Number of Local/School Awards (1st-3rd place or equivalent)",
-        "other": "integer Number of Honorable Mentions or Participation Awards (any level), do not count same award twice"
+        "int": "Integer: Number of International Awards (1st-10th place or equivalent). Example: 1 for a bronze medal in International Math Olympiad",
+        "nat": "Integer: Number of National Awards (1st-10th place or equivalent). Example: 2 for a 2nd place in National Science Fair and honorable mention in National Merit Scholarship",
+        "state": "Integer: Number of State/Regional Awards (1st-10th place or equivalent). Example: 3 for winning state debate championship, 3rd in regional science fair, and 5th in state math competition",
+        "local": "Integer: Number of Local/School Awards (1st-3rd place or equivalent). Example: 4 for various 1st-3rd place finishes in school competitions",
+        "other": "Integer: Number of Honorable Mentions or Participation Awards (any level, no duplicates). Example: 2 for participation in Model UN and honorable mention in a national essay contest"
     }
 }
 
@@ -107,7 +107,7 @@ def worker(queue):
         queue.task_done()
 
 def categorize():
-    num_threads = 4
+    num_threads = 5
     queue = Queue()
 
     # Start worker threads
