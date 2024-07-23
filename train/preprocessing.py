@@ -22,7 +22,7 @@ def load_data(file_path):
                         value = int(value)
                     features.append(value)
             
-            accept_rate = features.pop(17)  # accept_rate is at index 17
+            accept_rate = features.pop()  # accept_rate is the last item
             
             data.append(features)
             labels.append(accept_rate)
@@ -59,33 +59,57 @@ def feature_engineering(X):
     categorical_columns = ['ethnicity', 'gender', 'type_school', 'location', 
                            'app_round', 'state_status', 'legacy', 'first_gen', 
                            'special_talents']
+    
+    # Define all possible categories for each categorical column
+    category_mappings = {
+        'ethnicity': [0, 1],
+        'gender': [0, 1, 2],
+        'type_school': [0, 1, 2, 3, 4],
+        'location': [0, 1, 2],
+        'app_round': [0, 1],
+        'state_status': [0, 1],
+        'legacy': [0, 1],
+        'first_gen': [0, 1],
+        'special_talents': [0, 1, 2, 3, 4]
+    }
+    
     # Encoding categorical variables
-    df = pd.get_dummies(df, columns=categorical_columns)
+    for col in categorical_columns:
+        for category in category_mappings[col]:
+            df[f'{col}_{category}'] = (df[col] == category).astype(int)
+    
+    # Drop original categorical columns
+    df = df.drop(columns=categorical_columns)
+    
     return df
 
-def preprocess_data(X, y=None, is_training=True):
+def preprocess_data(X, y=None, is_training=True, scaler=None):
     X = feature_engineering(X)
     
     # Impute missing values
     imputer = SimpleImputer(strategy='median')
     X = imputer.fit_transform(X)
     
-    if is_training and y is not None:
-        # Convert y to categorical for stratification
-        y_cat = pd.cut(y, bins=[-np.inf, 0.5, 1.5, 2.5, np.inf], labels=[0, 1, 2, 3])
-        
-        # Apply SMOTE to balance the dataset
-        smote = SMOTE(random_state=42)
-        X_resampled, y_resampled = smote.fit_resample(X, y_cat)
-        
-        # Convert y back to continuous
-        y_resampled = y_resampled.astype(float)
-        
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X_resampled)
-        
-        return X_scaled, y_resampled, scaler
-    else:
+    if is_training:
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
-        return X_scaled, scaler
+        
+        if y is not None:
+            # Convert y to categorical for stratification
+            y_cat = pd.cut(y, bins=[-np.inf, 0.5, 1.5, 2.5, np.inf], labels=[0, 1, 2, 3])
+            
+            # Apply SMOTE to balance the dataset
+            smote = SMOTE(random_state=42)
+            X_resampled, y_resampled = smote.fit_resample(X_scaled, y_cat)
+            
+            # Convert y back to continuous
+            y_resampled = y_resampled.astype(float)
+            
+            return X_resampled, y_resampled, scaler
+        else:
+            return X_scaled, scaler
+    else:
+        if scaler is None:
+            raise ValueError("Scaler must be provided for inference")
+        X_scaled = scaler.transform(X)
+        return X_scaled

@@ -132,7 +132,10 @@ def main():
     
     # Load and preprocess the input data
     X, actual_accept_rate = load_data('train/inference/gpt-4o_output.json')
-    X_preprocessed, _ = preprocess_data(X, is_training=False)
+    X_preprocessed = preprocess_data(X, is_training=False, scaler=scaler)
+    
+    # Print the shape of X_preprocessed for debugging
+    print(f"Shape of preprocessed input: {X_preprocessed.shape}")
     
     # Make prediction
     prediction = model.predict(X_preprocessed)[0]
@@ -141,6 +144,8 @@ def main():
     print(f"\nPredicted accept rate: {prediction:.2f}")
     
     if actual_accept_rate is not None:
+        if isinstance(actual_accept_rate, np.ndarray):
+            actual_accept_rate = actual_accept_rate[0]
         print(f"Actual accept rate: {actual_accept_rate:.2f}")
         print(f"Difference: {abs(prediction - actual_accept_rate):.2f}")
     else:
