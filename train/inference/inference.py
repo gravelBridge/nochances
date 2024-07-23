@@ -199,8 +199,8 @@ def feature_engineering(X):
 
 def main():
     # Load the saved model and scaler
-    model = joblib.load('best_model_xgb.joblib')
-    scaler = joblib.load('scaler.joblib')
+    model = joblib.load('models/best_model_xgb.joblib')
+    scaler = joblib.load('models/scaler.joblib')
     
     print("Number of features expected by scaler:", scaler.n_features_in_)
     

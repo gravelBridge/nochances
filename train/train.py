@@ -180,8 +180,8 @@ def main():
     print(f"MAE: {mae:.4f}")
     
     # Save the best model
-    joblib.dump(best_model, f'best_model_{best_model_type.lower()}.joblib')
-    joblib.dump(scaler, 'scaler.joblib')
+    joblib.dump(best_model, f'models/best_model_{best_model_type.lower()}.joblib')
+    joblib.dump(scaler, 'models/scaler.joblib')
     
     # Train Neural Network
     nn_model = create_nn_model(X_train_scaled.shape[1])
@@ -197,7 +197,7 @@ def main():
     print(f"MAE: {mae_nn:.4f}")
     
     # Save Neural Network model
-    nn_model.save('best_model_nn.keras')
+    nn_model.save('models/best_model_nn.keras')
     
     # Ensemble prediction
     y_pred_ensemble = (y_pred + y_pred_nn) / 2
