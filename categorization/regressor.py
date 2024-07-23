@@ -71,14 +71,17 @@ class ResultRegressor(torch.nn.Module):
                                                      config=DistilBertConfig(max_position_embeddings=10))
         self.text3 = DistilBertModel.from_pretrained("distilbert-base-uncased", 
                                                      ignore_mismatched_sizes=True,
-                                                     config=DistilBertConfig(max_position_embeddings=512,
-                                                                             dropout=0.2))
+                                                     config=DistilBertConfig(max_position_embeddings=512))
         
         self.pc1 = torch.nn.Linear(768, 64)
+        self.bn1 = torch.nn.BatchNorm1d(64)
         self.pc2 = torch.nn.Linear(768, 64)
+        self.bn2 = torch.nn.BatchNorm1d(64)
         self.pc3 = torch.nn.Linear(768, 128)
+        self.bn3 = torch.nn.BatchNorm1d(128)
         
         self.fc1 = torch.nn.Linear(266, 32)
+        self.bn4 = torch.nn.BatchNorm1d(32)
         self.fc2 = torch.nn.Linear(32, 1)
 
         self.relu = torch.nn.ReLU()
@@ -92,12 +95,12 @@ class ResultRegressor(torch.nn.Module):
         
         numerical_inputs = torch.cat([
             batch['numerical_inputs'],
-            self.relu(self.pc1(major_pooler)),
-            self.relu(self.pc2(residence_pooler)),
-            self.relu(self.pc3(extracurriculars_pooler))
+            self.relu(self.bn1(self.pc1(major_pooler))),
+            self.relu(self.bn2(self.pc2(residence_pooler))),
+            self.relu(self.bn3(self.pc3(extracurriculars_pooler)))
         ], dim=1)
 
-        x = self.fc1(numerical_inputs)
+        x = self.bn4(self.fc1(numerical_inputs))
         x = self.relu(x)
         x = self.fc2(x)
         x = self.dropout(x)
