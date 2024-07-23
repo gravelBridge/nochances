@@ -13,7 +13,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Now we can import from the train directory
 from train.preprocessing import load_data, preprocess_data
 
-
 def perform_pca(X, n_components=None):
     # Standardize the features
     scaler = StandardScaler()
@@ -92,13 +91,11 @@ def main():
     print("Explained Variance Ratio:")
     for i, ratio in enumerate(pca.explained_variance_ratio_):
         print(f"PC{i+1}: {ratio:.4f}")
-
     # Print the cumulative explained variance ratio
     print("\nCumulative Explained Variance Ratio:")
     cumulative_ratio = np.cumsum(pca.explained_variance_ratio_)
     for i, ratio in enumerate(cumulative_ratio):
         print(f"PC1-PC{i+1}: {ratio:.4f}")
-
     # Determine number of components for 95% variance explained
     n_components_95 = np.argmax(cumulative_ratio >= 0.95) + 1
     print(f"\nNumber of components explaining 95% of variance: {n_components_95}")
