@@ -16,15 +16,20 @@ def load_data(file_path, inference=False):
                 continue
             
             features = []
+            accept_rate = None
             for category, values in entry.items():
+                if category == "basic_info":
+                    accept_rate = values.get("accept_rate")
                 for key, value in values.items():
-                    if isinstance(value, str) and value.isdigit():
-                        value = int(value)
-                    features.append(value)
+                    if key != "accept_rate":
+                        if isinstance(value, str) and value.isdigit():
+                            value = int(value)
+                        features.append(value)
             
             if not inference:
-                accept_rate = features.pop()  # accept_rate is the last item
-                labels.append(accept_rate)
+                if accept_rate is None:
+                    raise ValueError("accept_rate not found in the data")
+                labels.append(int(accept_rate))
             
             data.append(features)
     
@@ -34,7 +39,7 @@ def feature_engineering(X):
     # Original features
     df = pd.DataFrame(X, columns=[
         'ethnicity', 'gender', 'income_bracket', 'type_school', 'app_round', 'gpa', 'ap_ib_courses',
-        'ap_ib_scores', 'test_score', 'location', 'state_status', 'legacy', 'intended_major',
+        'ap_ib_scores', 'test_score', 'location', 'state_status', 'legacy', 'intended_major', 'major_alignment',
         'first_gen', 'languages', 'special_talents', 'hooks', 'nat_int', 'reg', 'local',
         'volunteering', 'ent', 'intern', 'add', 'res', 'sports', 'work_exp', 'leadership',
         'community_impact', 'ec_years', 'int_awards', 'nat_awards', 'state_awards', 'local_awards', 'other_awards'

@@ -29,8 +29,8 @@ reddit = praw.Reddit(
 subreddit = reddit.subreddit("collegeresults")
 
 # File paths
-zst_input_file = r"/Users/symphony/Desktop/nochances/scraping/collegeresults_submissions.zst"
-output_file = r"combined_collegeresults_data.json"
+zst_input_file = r"scraping/collegeresults_submissions.zst"
+output_file = r"scraping/combined_collegeresults_data.json"
 
 # Date range
 from_date = datetime.strptime("2000-01-01", "%Y-%m-%d")
