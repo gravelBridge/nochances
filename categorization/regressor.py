@@ -1,13 +1,15 @@
+from transformers import DistilBertConfig, DistilBertModel, DistilBertTokenizer
 import torch
-from torch.utils.data import Dataset
-from transformers import DistilBertModel, DistilBertTokenizer, DistilBertConfig
 
-class CollegeDataset(Dataset):
+class CollegeResultsDataset(torch.utils.data.Dataset):
     def __init__(self, data, colleges_list, stopwords):
         self.data = []
         self.tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
         self.stopwords = stopwords
-        
+        self.embedding_dim = 16
+        self.num_embeddings_list = [2, 3, 5, 5, 40, 5, 5, 2, 4, len(colleges_list)]
+        self.model = DistilBertModel.from_pretrained("distilbert-base-uncased")
+
         for post_id, post in data.items():
             for college in post['results']:
                 self.data.append({
@@ -18,12 +20,16 @@ class CollegeDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
+    
+    def embed_text(self, text, max_length):
+        inputs = self.tokenizer.encode_plus(text, return_tensors='pt', max_length=max_length, padding='max_length', truncation=True)
+        return torch.tensor(self.model(**inputs)['last_hidden_state'][0][0], dtype=torch.float32)
 
-    def __getitem__(self, idx):
-        item = self.data[idx]
+    def __getitem__(self, i):
+        item = self.data[i]
         post = item['post']
         college = item['college']
-        
+
         numerical_inputs = torch.tensor([
             int(post['ethnicity']),
             int(post['gender']),
@@ -35,25 +41,28 @@ class CollegeDataset(Dataset):
             int(college['in_state']),
             int(college['round']),
             item['college_id']
-        ], dtype=torch.long)
+        ], dtype=torch.float)
+
+        new_numerical_inputs = torch.empty((10,16))
+
+        for i, n in enumerate(self.num_embeddings_list):
+            new_numerical_inputs[i] = torch.nn.Embedding(n, self.embedding_dim)(numerical_inputs[i].long())
+        numerical_inputs = torch.flatten(new_numerical_inputs)
 
         major = self.remove_stopwords(post['major'])
         residence = self.remove_stopwords(post['residence'])
         extracurriculars = self.remove_stopwords('\n'.join(post['extracurriculars'] + post['awards']))
 
-        major_encoded = self.tokenizer.encode_plus(major, max_length=20, padding='max_length', truncation=True)
-        residence_encoded = self.tokenizer.encode_plus(residence, max_length=10, padding='max_length', truncation=True)
-        extracurriculars_encoded = self.tokenizer.encode_plus(extracurriculars, max_length=512, padding='max_length', truncation=True)
+        major_embedding = self.embed_text(major, 20)
+        residence_embedding = self.embed_text(residence, 10)
+        ecs_embedding = self.embed_text(extracurriculars, 512)
 
         return {
-            'numerical_inputs': numerical_inputs,
-            'major_ids': torch.tensor(major_encoded['input_ids'], dtype=torch.long),
-            'major_mask': torch.tensor(major_encoded['attention_mask'], dtype=torch.long),
-            'residence_ids': torch.tensor(residence_encoded['input_ids'], dtype=torch.long),
-            'residence_mask': torch.tensor(residence_encoded['attention_mask'], dtype=torch.long),
-            'extracurriculars_ids': torch.tensor(extracurriculars_encoded['input_ids'], dtype=torch.long),
-            'extracurriculars_mask': torch.tensor(extracurriculars_encoded['attention_mask'], dtype=torch.long),
-            'target': torch.tensor(college['accepted'], dtype=torch.float32)
+            'numerical_inputs': numerical_inputs.detach(),
+            'major_embedding': major_embedding.detach(),
+            'residence_embedding': residence_embedding.detach(),
+            'ecs_embedding': ecs_embedding.detach(),
+            'target': torch.tensor(college['accepted'], dtype=torch.float32).detach()
         }
 
     def remove_stopwords(self, text):
@@ -63,45 +72,53 @@ class CollegeDataset(Dataset):
 class ResultRegressor(torch.nn.Module):
     def __init__(self):
         super(ResultRegressor, self).__init__()
-        self.text1 = DistilBertModel.from_pretrained("distilbert-base-uncased", 
-                                                     ignore_mismatched_sizes=True,
-                                                     config=DistilBertConfig(max_position_embeddings=20))
-        self.text2 = DistilBertModel.from_pretrained("distilbert-base-uncased", 
-                                                     ignore_mismatched_sizes=True,
-                                                     config=DistilBertConfig(max_position_embeddings=10))
-        self.text3 = DistilBertModel.from_pretrained("distilbert-base-uncased", 
-                                                     ignore_mismatched_sizes=True,
-                                                     config=DistilBertConfig(max_position_embeddings=512))
-        
-        self.pc1 = torch.nn.Linear(768, 64)
-        self.bn1 = torch.nn.BatchNorm1d(64)
-        self.pc2 = torch.nn.Linear(768, 64)
-        self.bn2 = torch.nn.BatchNorm1d(64)
-        self.pc3 = torch.nn.Linear(768, 128)
-        self.bn3 = torch.nn.BatchNorm1d(128)
-        
-        self.fc1 = torch.nn.Linear(266, 32)
-        self.bn4 = torch.nn.BatchNorm1d(32)
-        self.fc2 = torch.nn.Linear(32, 1)
 
-        self.relu = torch.nn.ReLU()
-        self.sigmoid = torch.nn.Sigmoid()
-        self.dropout = torch.nn.Dropout(0.2)
+        total_embedding_dim = 160
+
+        self.bc1 = torch.nn.Linear(total_embedding_dim, 500)
+        self.bc2 = torch.nn.Linear(768, 50)
+        self.bc3 = torch.nn.Linear(768, 50)
+        self.bc4 = torch.nn.Linear(768, 300)
+
+        self.fc1 = torch.nn.Linear(900, 512)
+        self.fc2 = torch.nn.Linear(512, 256)
+        self.fc3 = torch.nn.Linear(256, 64)
+        self.fc4 = torch.nn.Linear(64, 1)
+
+        self.layernorm1 = torch.nn.LayerNorm(total_embedding_dim)
+        self.layernorm2 = torch.nn.LayerNorm(512)
+        self.layernorm3 = torch.nn.LayerNorm(256)
+        self.layernorm4 = torch.nn.LayerNorm(64)
+
+        self.dropout = torch.nn.Dropout(0.5)
+        self.activation = torch.nn.GELU()
 
     def forward(self, batch):
-        major_pooler = self.text1(batch['major_ids'], batch['major_mask'])[0][:,0]
-        residence_pooler = self.text2(batch['residence_ids'], batch['residence_mask'])[0][:,0]
-        extracurriculars_pooler = self.text3(batch['extracurriculars_ids'], batch['extracurriculars_mask'])[0][:,0]
-        
-        numerical_inputs = torch.cat([
-            batch['numerical_inputs'],
-            self.relu(self.bn1(self.pc1(major_pooler))),
-            self.relu(self.bn2(self.pc2(residence_pooler))),
-            self.relu(self.bn3(self.pc3(extracurriculars_pooler)))
-        ], dim=1)
+        numerical_inputs = self.layernorm1(batch['numerical_inputs'])
+        major = self.dropout(self.activation(self.bc2(batch['major_embedding'])))
+        residence = self.dropout(self.activation(self.bc3(batch['residence_embedding'])))
+        ecs = self.dropout(self.activation(self.bc4(batch['ecs_embedding'])))
 
-        x = self.bn4(self.fc1(numerical_inputs))
-        x = self.relu(x)
-        x = self.fc2(x)
+        numerical_inputs = self.bc1(numerical_inputs)
+        numerical_inputs = self.activation(numerical_inputs)
+        numerical_inputs = self.dropout(numerical_inputs)
+
+        combined_input = torch.cat([major, residence, ecs, numerical_inputs], dim=1)
+
+        x = self.fc1(combined_input)
+        x = self.layernorm2(x)
+        x = self.activation(x)
         x = self.dropout(x)
-        return self.sigmoid(x).squeeze()
+
+        x = self.fc2(x)
+        x = self.layernorm3(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+
+        x = self.fc3(x)
+        x = self.layernorm4(x)
+        x = self.activation(x)
+        x = self.dropout(x)
+
+        x = self.fc4(x)
+        return torch.sigmoid(x.squeeze(dim=1))
