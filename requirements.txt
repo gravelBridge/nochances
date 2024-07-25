@@ -6,3 +6,11 @@ python-dotenv
 joblib
 seaborn
 tensorflow
+numpy
+pandas
+scikit-learn
+xgboost
+lightgbm
+optuna
+matplotlib
+imblearn

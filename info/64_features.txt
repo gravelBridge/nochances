@@ -1,4 +1,4 @@
-Original features: 35
+Original features: 36
 Added interaction terms: 3 (gpa_test_score, ap_ib_total, income_first_gen)
 Added aggregated features: 2 (total_awards, total_ecs)
 Added polynomial features: 5 (gpa_squared, test_score_squared, ap_ib_total_squared, total_awards_squared, total_ecs_squared)
@@ -15,4 +15,4 @@ One-hot encoded features:
     first_gen: 2 (0, 1)
     special_talents: 5 (0, 1, 2, 3, 4)
 
-35 (original) + 3 (interaction) + 2 (aggregated) + 5 (polynomial) + 1 (normalized) + 17 (one-hot encoded) = 63 features
+36 (original) + 3 (interaction) + 2 (aggregated) + 5 (polynomial) + 1 (normalized) + 17 (one-hot encoded) = 64 features
