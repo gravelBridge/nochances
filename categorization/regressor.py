@@ -1,4 +1,4 @@
-from transformers import DistilBertConfig, DistilBertModel, DistilBertTokenizer
+from transformers import DistilBertModel, DistilBertTokenizer
 import torch
 
 class CollegeResultsDataset(torch.utils.data.Dataset):
@@ -11,12 +11,44 @@ class CollegeResultsDataset(torch.utils.data.Dataset):
         self.model = DistilBertModel.from_pretrained("distilbert-base-uncased")
 
         for post_id, post in data.items():
+            if post['results']:
+                major = self.remove_stopwords(post['major'])
+                residence = self.remove_stopwords(post['residence'])
+                extracurriculars = self.remove_stopwords('\n'.join(post['extracurriculars'] + post['awards']))
+
+                major_embedding = self.embed_text(major, 20)
+                residence_embedding = self.embed_text(residence, 10)
+                ecs_embedding = self.embed_text(extracurriculars, 512)
+            
             for college in post['results']:
+                numerical_inputs = torch.tensor([
+                    int(post['ethnicity']),
+                    int(post['gender']),
+                    int(post['income_bracket']),
+                    int(post['gpa']),
+                    int(post['apib_number']),
+                    int(post['apib_scores']),
+                    int(post['standardized_test_scores']),
+                    int(college['in_state']),
+                    int(college['round']),
+                    colleges_list.index(college['school_name'])
+                ], dtype=torch.float)
+
+                new_numerical_inputs = torch.empty((10,16))
+
+                for i, n in enumerate(self.num_embeddings_list):
+                    print(i, n)
+                    new_numerical_inputs[i] = torch.nn.Embedding(n, self.embedding_dim)(numerical_inputs[i].long())
+                numerical_inputs = torch.flatten(new_numerical_inputs)
+
                 self.data.append({
-                    'post': post,
-                    'college': college,
-                    'college_id': colleges_list.index(college['school_name'])
+                    'numerical_inputs': numerical_inputs.detach(),
+                    'major_embedding': major_embedding.detach(),
+                    'residence_embedding': residence_embedding.detach(),
+                    'ecs_embedding': ecs_embedding.detach(),
+                    'target': torch.tensor(college['accepted'], dtype=torch.float32).detach()
                 })
+            print(f"Loaded {post_id}")
 
     def __len__(self):
         return len(self.data)
@@ -26,44 +58,7 @@ class CollegeResultsDataset(torch.utils.data.Dataset):
         return torch.tensor(self.model(**inputs)['last_hidden_state'][0][0], dtype=torch.float32)
 
     def __getitem__(self, i):
-        item = self.data[i]
-        post = item['post']
-        college = item['college']
-
-        numerical_inputs = torch.tensor([
-            int(post['ethnicity']),
-            int(post['gender']),
-            int(post['income_bracket']),
-            int(post['gpa']),
-            int(post['apib_number']),
-            int(post['apib_scores']),
-            int(post['standardized_test_scores']),
-            int(college['in_state']),
-            int(college['round']),
-            item['college_id']
-        ], dtype=torch.float)
-
-        new_numerical_inputs = torch.empty((10,16))
-
-        for i, n in enumerate(self.num_embeddings_list):
-            new_numerical_inputs[i] = torch.nn.Embedding(n, self.embedding_dim)(numerical_inputs[i].long())
-        numerical_inputs = torch.flatten(new_numerical_inputs)
-
-        major = self.remove_stopwords(post['major'])
-        residence = self.remove_stopwords(post['residence'])
-        extracurriculars = self.remove_stopwords('\n'.join(post['extracurriculars'] + post['awards']))
-
-        major_embedding = self.embed_text(major, 20)
-        residence_embedding = self.embed_text(residence, 10)
-        ecs_embedding = self.embed_text(extracurriculars, 512)
-
-        return {
-            'numerical_inputs': numerical_inputs.detach(),
-            'major_embedding': major_embedding.detach(),
-            'residence_embedding': residence_embedding.detach(),
-            'ecs_embedding': ecs_embedding.detach(),
-            'target': torch.tensor(college['accepted'], dtype=torch.float32).detach()
-        }
+        return self.data[i]
 
     def remove_stopwords(self, text):
         filtered_text = [w for w in text.split() if w.lower() not in self.stopwords]
