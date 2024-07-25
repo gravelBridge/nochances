@@ -284,7 +284,18 @@ def calculate_acceptance_probability(ensemble_prediction, school_category):
 
     return probability
 
-
+def get_color_for_probability(probability):
+    if probability < 0.3:
+        return "#D34C45"  # Red
+    elif probability < 0.5:
+        return "#E68128"  # Orange
+    elif probability < 0.7:
+        return "#D6AD3D"  # Yellow
+    elif probability < 0.9:
+        return "#6CB054"  # Green
+    else:
+        return "#4E9AC1"  # Blue
+    
 def predict_acceptance(post, school_name):
     # Process the post with GPT
     gpt_output = process_post_with_gpt(post)
@@ -320,131 +331,14 @@ def predict_acceptance(post, school_name):
 
     # Calculate the probability of acceptance
     probability = calculate_acceptance_probability(ensemble_prediction, school_category)
-
-    return {
-        "ensemble_prediction": ensemble_prediction,
-        "school_category": school_category,
-        "acceptance_probability": probability,
-        "nn_prediction": nn_prediction,
-        "xgb_prediction": xgb_prediction,
+    # Convert non-serializable types
+    result = {
+        "ensemble_prediction": float(ensemble_prediction),
+        "school_category": int(school_category),
+        "acceptance_probability": float(probability),
+        "nn_prediction": float(nn_prediction),
+        "xgb_prediction": float(xgb_prediction),
+        "color": get_color_for_probability(probability)
     }
 
-
-if __name__ == "__main__":
-    example_post = """
-3.8+|1500+/34+|STEM
-Demographics
-
-Gender: female
-
-Race/Ethnicity: white
-
-Residence: WA state (not Seattle area)
-
-Income Bracket: ~60K, ~180K, or ~200K (depends on fin aid policy; custodial+noncustodial, custodial+step-parent, or all three).
-
-Type of School: non-competitive public that sends 1-5 people per year to private T35s
-
-Hooks (Recruited Athlete, URM, First-Gen, Geographic, Legacy, etc.): none (LGBT+, would be low income without recent step-parent, area is underrepresented even though state is overrepresented).
-
-Intended Major(s): chemistry, applied with possible minors/double majors in econ, poli sci, history of science & technology, Spanish, etc. Major was always the same, minors were just what I was vibing with that day.
-
-Academics
-
-GPA (UW/W): 3.98 UW (~4.55 W, school does not weight GPAs or use a weighted GPA for anything)
-
-Rank (or percentile): 61/456 (unweighted ranking system)
-
-# of Honors/AP/IB/Dual Enrollment/etc.: 9 APs, 1 post-AP, 2 honors, 4 dual enrollment, 5 years of Spanish
-
-Senior Year Course Load: AP Physics 1, AP U.S. Government, Principles of Biomedical Science, Multivariable Calculus, AP English Literature, Spanish V
-
-Standardized Testing
-
-List the highest scores earned and all scores that were reported.
-
-SAT I: 1450 (740RW, 710M; did not report)
-
-ACT: 34 (35E, 31M, 36R, 33S)
-
-AP/IB: 5/4/4/4/4/3/3
-
-Extracurriculars/Activities
-
-List all extracurricular involvements, including leadership roles, time commitments, major achievements, etc.
-
-Archery (competed nationally, rangemaster/assist coaches at range, founding member of JOAD club, a slew of 1st/2nd places at regional tournaments. 10 hours/week)
-
-Speech & Debate (congressional debate + informative speaking, lettered varsity and “debate mom”, competed at state in Congress, nothing really high impact. 6 hours/week during tournament season).
-
-Community service club vice president (organized a lot of events, this club has also existed for 5+ years, put around 5 hours/week into this).
-
-Math team (local competitions, minor awards, tutoring, etc. 4 hours/week).
-
-GSA club (officer, four year member, helped lead projects that got the club involved with the school and greater community. Led walkout after a bad incident of homophobia took place at our school. 2 hours/week).
-
-Foreign language learning (mainly Spanish, German, and Polish, 7 hours/week outside of school throughout the year; this is pretty leisurely for me).
-
-Chemistry club treasurer/founding member (club only lasted a year as the supervisor got too busy for it; we drew up actual lab proposals and gathered the supplies to complete them, lots of time spent researching. As treasurer, I organized several fundraisers, managed club funds, and approved/made all purchases).
-
-Art stuffs (lots of drawing and painting, never entered any contests though I did submit a portfolio to every college that would take them. Varies significantly, averages to 2 hours/week).
-
-Other volunteering activity (16 hours/week over the summer)
-
-Random club that didn’t do much, technically a founding member (pretty much filler; 1 hour/week).
-
-Awards/Honors
-
-List all awards and honors submitted on your application.
-
-Poetry contest winner (national)
-
-Scholarship winner (regional)
-
-Seal of Biliteracy (Spanish)
-
-AP Scholar w/ Distinction
-
-National Honor Society
-
-Letters of Recommendation
-
-English teacher, 9/10. We got along great and she adored my writing (used my essays most of the time when showing examples), read the letter and it felt pretty glowing.
-
-Chemistry teacher, 8/10. Again, got along great with her and I was definitely an over-achiever in her class. Didn’t get to read it and she isn’t the strongest of writers, so 8/10 is a solid guess.
-
-History teacher, 6/10. We got along great, he openly brags about me, however he used the same recommendation outline that he used for a student last year. Granted, that student got into Notre Dame, but wasn’t nearly as personalized.
-
-Spanish teacher, 7.5/10. I’m one of her standouts and we know each other quite well, been to her house for a barbecue before. Read the letter and it wasn’t as glowing as my English teacher’s, but it highlighted a lot of achievements that I couldn’t put elsewhere in my application. Content was great, wording/tone had room to improve.
-
-Interviews
-
-Bryn Mawr, 2/10. My interviewer and I were not vibing, I was incredibly nervous, and after I consoled myself over how I just blew my chances of admission to a hard target-ish school that I really liked.
-
-Mount Holyoke, 9/10. Aside from a little misunderstanding that I didn’t correct, we ~vibed~. Loved my interviewer, she made me want to attend more than I had wanted to before the interview!
-
-Swarthmore, 7/10. Mostly vibed, but we didn’t have the same click I had with other interviewers. Good interview and conversation.
-
-Princeton, 9/10. Interviewer was a super cool guy and we had an awesome conversation. Their interviews aren’t used in the admissions process, however, so I just appreciated it for what it was.
-
-MIT, 0/10. Hated my interviewer who was a sexist mfer, came very close to leaving the call early. Made many backhanded comments about women at MIT, my major, my city, and even MIT in general. Very much a self-important dude bro, made me regret applying to MIT in general. If I’d been admitted, he gave me such an ick that I genuinely wouldn’t have attended.
-
-Essays
-
-Personal statement was probably the best essay I wrote throughout the cycle. Spent 20+ hours on it and revised a lot between November and January. It was about my speech impediment and debate, a story which my debate coach found very inspirational.
-
-My essays for Georgia Tech were heavily targeting their mission statement in how I framed everything. After submitting, I felt incredibly confident about my admission. Spent maybe 5 hours total on this application.
-
-Other supplements were largely done the day of the deadline and very rushed, though quality was still fairly high. I write best under a deadline, which unfortunately does jive overly well with being proactive about college applications.
-
-Want to go to mit
-    """
-
-    school_name = "mit"
-    prediction = predict_acceptance(example_post, school_name)
-    print(f"Prediction for {school_name}:")
-    print(f"NN prediction: {prediction['nn_prediction']:.2f}")
-    print(f"XGB prediction: {prediction['xgb_prediction']:.2f}")
-    print(f"Ensemble prediction: {prediction['ensemble_prediction']:.2f}")
-    print(f"School category: {prediction['school_category']}")
-    print(f"Probability of acceptance: {prediction['acceptance_probability']:.2%}")
+    return result
