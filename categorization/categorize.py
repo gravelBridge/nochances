@@ -32,11 +32,11 @@ JSON_SCHEMAS = {
         "type_school": "Integer: Most selective accepted school type. 0 = STEM (e.g., MIT, Caltech), 1 = Liberal Arts (e.g., Williams, Amherst), 2 = Art/Design (e.g., RISD, Parsons), 3 = Music Conservatory (e.g., Juilliard, Berklee), 4 = Other specialized (e.g., military academies). For universities known for multiple areas, choose based on the applicant's intended major. Example: 0 for Harvard (considered STEM-strong) if applying for Biochemistry",
         "app_round": "Integer: For most selective accepted school. 0 = Early Decision/Action, 1 = Regular Decision. If not specified, assume 1. Example: 1 for Regular Decision (if not specified)",
         "gpa": "Integer: Unweighted 4.0 scale. 0 = Below 2.5, 1 = 2.5-2.99, 2 = 3.0-3.49, 3 = 3.5-3.79, 4 = 3.8-4.0. If only weighted GPA is given, estimate unweighted by subtracting 0.5 (minimum 0), this is still above 4.0, just use 4. If no GPA is given but class rank is top 10%, use 4. Example: 4 for 4.0 UW",
-        "ap-ib-courses": "Integer: Total number of AP and IB courses taken (exclude honors). If only total number of APs passed is given, use that number. Example: 10 for 10 APs",
-        "ap-ib-scores": "Integer: 0 = No scores, 1 = Avg below 3(AP)/4(IB), 2 = Avg 3-3.9(AP)/4-4.9(IB), 3 = Avg 4-4.9(AP)/5-5.9(IB), 4 = Avg 5(AP)/6-7(IB). Calculate the average if multiple scores are given. If only some scores are mentioned, assume the others are average (3 for AP, 4 for IB). Example: 3 for mostly 4s and 5s on AP exams",
-        "test-score": "Integer: 0 = No score/below 1000 SAT/20 ACT, 1 = 1000-1190 SAT/20-23 ACT, 2 = 1200-1390 SAT/24-29 ACT, 3 = 1400-1490 SAT/30-33 ACT, 4 = 1500+ SAT/34+ ACT. If both SAT and ACT are given, use the higher equivalent. If superscored, use that. Example: 4 for 1570 SAT or 35 ACT",
+        "ap_ib_courses": "Integer: Total number of AP and IB courses taken (exclude honors). If only total number of APs passed is given, use that number. Example: 10 for 10 APs",
+        "ap_ib_scores": "Integer: 0 = No scores, 1 = Avg below 3(AP)/4(IB), 2 = Avg 3-3.9(AP)/4-4.9(IB), 3 = Avg 4-4.9(AP)/5-5.9(IB), 4 = Avg 5(AP)/6-7(IB). Calculate the average if multiple scores are given. If only some scores are mentioned, assume the others are average (3 for AP, 4 for IB). Example: 3 for mostly 4s and 5s on AP exams",
+        "test_score": "Integer: 0 = No score/below 1000 SAT/20 ACT, 1 = 1000-1190 SAT/20-23 ACT, 2 = 1200-1390 SAT/24-29 ACT, 3 = 1400-1490 SAT/30-33 ACT, 4 = 1500+ SAT/34+ ACT. If both SAT and ACT are given, use the higher equivalent. If superscored, use that. Example: 4 for 1570 SAT or 35 ACT",
         "location": "Integer: 0 = Rural (<10k population), 1 = Suburban (10k-100k), 2 = Urban (>100k). If not explicitly stated, infer from context (e.g., 'small town' = 0, 'suburb of Chicago' = 1). Example: 1 for Suburban",
-        "state-status": "Integer: For most selective accepted school. 0 = In Same State, 1 = Not In Same State. If not explicitly stated, infer from context (e.g., if applying to many out-of-state schools, assume 1). Example: 1 for out-of-state (if not specified)",
+        "state_status": "Integer: For most selective accepted school. 0 = In Same State, 1 = Not In Same State. If not explicitly stated, infer from context (e.g., if applying to many out-of-state schools, assume 1). Example: 1 for out-of-state (if not specified)",
         "legacy": "Integer: For most selective accepted school. 0 = Legacy, 1 = Non-Legacy. Legacy includes parents, grandparents, or siblings who attended. If not mentioned, assume 1. Example: 1 for Non-Legacy (if not specified)",
         "intended_major": """Integer 1-10: Competitiveness of major at most selective accepted school. Consider both the competitiveness of the major in general and at the specific school. Examples:
             1 = Least competitive (e.g., Liberal Studies at NYU)
@@ -49,17 +49,36 @@ JSON_SCHEMAS = {
             8 = Very high competitiveness (e.g., Computer Science at Carnegie Mellon)
             9 = Extremely high competitiveness (e.g., Bioengineering at MIT)
             10 = Most competitive (e.g., Computer Science at Stanford)
-        Use the closest match based on the school's reputation for the specific major.""",        
+        Use the closest match based on the school's reputation for the specific major.""",
+        "major_alignment": """Integer: 1-5 scale measuring how well the applicant's profile aligns with their intended major. Consider:
+            - Relevance of coursework (e.g., advanced math/science for STEM majors)
+            - Related extracurricular activities
+            - Relevant awards or achievements
+            - Research or projects in the field
+            - Work or internship experience in the area
+            Guidelines and Examples:
+            1 = Minimal alignment
+            Example: A student applying for Computer Science who has only taken standard high school math courses, has no coding experience, and whose extracurriculars are unrelated to tech (e.g., school band and community service at an animal shelter).
+
+            2 = Basic alignment
+            Example: A student applying for Biology who has taken AP Biology and Chemistry, participates in the school's science club, but has no research experience or biology-related projects. Their main extracurricular is being captain of the soccer team.
+
+            3 = Moderate alignment
+            Example: A student applying for English Literature who has taken AP English and several other literature courses, is an editor for the school newspaper, has won a local writing contest, and volunteers at the city library. However, they haven't pursued any independent writing projects or attended specialized writing programs.
+
+            4 = Strong alignment
+            Example: A student applying for Mechanical Engineering who has taken AP Physics, AP Calculus BC, and an intro to engineering course at a local community college. They're the team lead in their school's robotics club, have participated in multiple engineering competitions with good results, and completed a summer internship at a local manufacturing company.
+
+            5 = Exceptional alignment
+            Example: A student applying for Astrophysics who has exhausted their high school's math and physics courses and is taking multivariable calculus online. They've conducted research at a university lab, co-authored a paper in a youth science journal, won awards in national and international physics olympiads, and founded a popular astronomy club at their school that does public outreach events.
+
+            Choose the level that best matches the applicant's alignment with their intended major based on these guidelines and examples.""",
         "first_gen": "Integer: 0 = Not first-generation college student, 1 = First-generation college student. First-gen means neither parent has a 4-year degree. If not explicitly stated, assume 0. Example: 0 (if not mentioned)",
         "languages": "Integer: Number of languages proficient in (including native). Count only if mentioned. Proficiency should be at conversational level or above. If not mentioned, use 1. Example: 1 (if not mentioned)",
         "special_talents": "Integer: 0 = None, 1 = School/local (e.g., lead in school play), 2 = Regional (e.g., first chair in regional orchestra), 3 = National (e.g., national chess champion), 4 = International (e.g., junior Olympian). Use highest level achieved. If multiple talents, use highest. Example: 2 for All-State Orchestra",
         "hooks": """Integer: Number of significant factors that may provide a notable advantage in the college admissions process. Guidelines:
             1) Include:
-               - Underrepresented Minority (URM) status in higher education (Black, Hispanic, Native American, Pacific Islander)
-               - First-generation college student (neither parent has a 4-year degree)
-               - Low-income background (generally below $65,000/year for a family of four, but may vary by institution)
                - Recruited athlete (official recruitment by college coaches, not just participation in high school sports)
-               - Legacy status (parents or siblings attended the most selective school applied to)
                - Child of faculty/staff at the most selective school applied to
                - Significant hardship or adversity overcome (e.g., refugee status, homelessness, major health challenges)
                - Exceptional talent or achievement (e.g., published author, Olympic athlete, Carnegie Hall performer)
@@ -69,17 +88,17 @@ JSON_SCHEMAS = {
                - Factors already accounted for in other categories (e.g., academic achievements, standard extracurricular activities, legacy)
             3) Counting:
                - Count each distinct hook as 1
-               - Multiple hooks can be counted (e.g., URM status and first-gen would count as 2)
+               - Multiple hooks can be counted (e.g., Recruited athlete and significant hardship would count as 2)
                - For exceptional talents/achievements, only count if truly extraordinary and likely to significantly impact admissions
             4) If no hooks are explicitly mentioned or evident from the application, use 0
             Examples: 
-               - 1 for low-income status
-               - 2 for being both a first-generation college student and a recruited athlete
-               - 3 for URM status, child of faculty, and overcoming a major health challenge""",
-        "accept_rate": "Integer: Selectivity of most selective accepted school. 0 = <5% (e.g., Harvard, Stanford, MIT), 1 = 5-15% (e.g., Northwestern, Cornell), 2 = 15-40% (e.g., UC Davis, Boston University), 3 = >40% (e.g., ASU) or Open Admission. Use most recent publicly available data. Example: 0 for Harvard"
+               - 1 for recruited athlete
+               - 2 for being both a child of faculty at most selective accepted school and a recruited athlete
+               - 3 for exceptional talent/achievement, child of faculty at most selective accepted school, and overcoming a major health challenge""",
+        "accept_rate": "Integer: Selectivity of most selective *accepted* school. 0 = <5% (e.g., Harvard, Stanford, MIT), 1 = 5-15% (e.g., Northwestern, Cornell), 2 = 15-40% (e.g., UC Davis, Boston University), 3 = >40% (e.g., ASU) or Open Admission. Use most recent publicly available data. Example: 0 for Harvard. Make sure they actually were *accepted* into this school. If they didn't get into anything, say 3."
     },
     "ecs": {
-        "nat-int": """Integer: Number of National or International Activities in notable positions. 'Notable' means:
+        "nat_int": """Integer: Number of National or International Activities in notable positions. 'Notable' means:
             1) Leadership role in a national/international organization
             2) Significant achievement at a national/international level
             3) Sustained participation (>1 year) in a highly selective national/international program

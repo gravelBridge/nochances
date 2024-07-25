@@ -25,12 +25,10 @@ def load_data(file_path, inference=False):
                         if isinstance(value, str) and value.isdigit():
                             value = int(value)
                         features.append(value)
-
             if not inference:
                 if accept_rate is None:
                     raise ValueError("accept_rate not found in the data")
                 labels.append(int(accept_rate))
-
             data.append(features)
 
     return np.array(data), np.array(labels) if not inference else None

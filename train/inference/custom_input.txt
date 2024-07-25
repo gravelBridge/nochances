@@ -1,91 +1,36 @@
-Demographics: Male, White, CA, Semi-Competitive School, hooks (legacy to penn/berkeley dont think it matters)
+Is my college list reasonable or am I delusional?
+DEMOGRAPHICS: White male, large northeast high school
 
-Intended Major(s): Comp Sci / Data Science / Biomedical Data Science
+HOOKS: basically none, Emory legacy
 
-ACT/SAT/SAT II: 1580 (800/780)
+STATS:
 
-UW/W GPA and Rank: 4.0 / 4.35
+1570 SAT,
 
-Coursework: Taking the IB diploma and multi-variable calc duel enrollment
+3.78 uw / 4.56 w gpa (positive i can show upward trend senior year but still 😬)
 
-Awards:
+4 AP exams, all 5s
 
-USACO Gold
+All AP and accelerated (above honors) course load
 
-Local Scholarship
+ECs:
 
-CSF
+Substack discussing the ethics, implications, and science of AI and consciousness research with over 300 free subscribers
 
-Extracurriculars:
+Founded and led an AI in Education committee to help teachers and students alike adapt to changes in tech (changed policies, discussed and researched solutions)
 
-Research at Stanford -- 3 publications using AI and physics modeling (skin cancer, using PDEs to model lungs, and using PDEs to model breast mammographies)
+Programming internship for Alzheimer's research at BU lab
 
-High School Research -- Lead a research team of 6 people, we're applying to Neurips high school track. If rejected we can probably submit to some lower journal. Its on AI segmenting microplastics in water and we used a GAN to generate synthetic data.
+3 years varsity ultimate frisbee -4 years science Olympiad club, 1 year captain
 
-Coding Club Co-president/founder -- 30 members focusing on USACO, research, and teaching
+-Hiked 48/48 of New Hampshires 4000 footers
 
-Volunteer at a local non-profit teaching kids from underserved communities Python
+-cofounder our towns chapter of nature advocacy group, talking to policymakers etc.
 
-Health Care + AI podcast -- Interviewed 10+ healthcare professionals and AI professionals to get a better understanding about how AI will affect the healthcare industry. Organized the recordings into a podcast series on a website.
+AWARDS (so lacking): -national merit semifinalist -ap scholar with honors -science Olympiad certificate of excellence 😭
 
-COSMOS Summer -- AI Cohort
+ESSAYS: I think they're very good, highlighting my passion and ambition to discover but Im the one who wrote them so
 
-Stanford Pre-Collegiate Summer -- AI Cohort
+INTENDED MAJOR: Applied mathematics or neuroscience (maybe neuro minor) Ok the list is:
 
-Part-time job -- After-school I run a class at a local elementary school on coding, once a week.
-
-Summer Camp Counselor -- Teach kids gymnastics during the summer
-
-3 Varsity Sports -- Cross Country, Soccer + club soccer, and Badminton -- All 4 years
-
-Essays/LORs/Other: 
-
-Essay: Probably going to be on how research shifted my thinking from logical and risk adverse to more a more creative mindset and seeing how things are interconnected.
-
-LORs:
-
-History Teacher: The class was known to be pretty hard but I did really well in it even though I'm not usually the best at history. He was also my EE (extended essay for IB with 4000 words) superviser so he knows I like history because we meet a lot. (8/10)
-
-Math Teacher: Wrote my letter of rec in the past for cosmos I think he is a good writer. He like that for my math IA I 3D printed out the thing I was modeling. (8/10
-
-Stanford Professor: Worked with him for 3 years should be pretty good (9/10)
-
-Schools: 
-
-Dream:
-
-Stanford (REA)
-
-Brown
-
-Penn
-
-Harvard
-
-Yale
-
-Reach:
-
-Berkeley
-
-NYU
-
-UCLA
-
-Georgia Tech
-
-Target:
-
-UCSB
-
-UNCCH
-
-UIUC
-
-Safety:
-
-U of Maryland
-
-Cal Poly
-
-UC Davis
+Want to go to yale EA
