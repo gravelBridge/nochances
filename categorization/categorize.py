@@ -9,19 +9,20 @@ import concurrent.futures
 load_dotenv()
 client = OpenAI()
 
-with open('scraping/combined_collegeresults_data.json', 'r', encoding='utf-8') as f:
+with open("scraping/combined_collegeresults_data.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 
 post_ids = list(data.keys())
 
-with open('categorization/prompt.txt', 'r') as f:
+with open("categorization/prompt.txt", "r") as f:
     prompt = f.read()
+
 
 def parse_and_append(json_string, filename):
     data = json.loads(json_string)
-    with open(filename, 'a') as file:
+    with open(filename, "a") as file:
         json.dump(data, file)
-        file.write('\n')
+        file.write("\n")
 
 
 JSON_SCHEMAS = {
@@ -95,7 +96,7 @@ JSON_SCHEMAS = {
                - 1 for recruited athlete
                - 2 for being both a child of faculty at most selective accepted school and a recruited athlete
                - 3 for exceptional talent/achievement, child of faculty at most selective accepted school, and overcoming a major health challenge""",
-        "accept_rate": "Integer: Selectivity of most selective *accepted* school. 0 = <5% (e.g., Harvard, Stanford, MIT), 1 = 5-15% (e.g., Northwestern, Cornell), 2 = 15-40% (e.g., UC Davis, Boston University), 3 = >40% (e.g., ASU) or Open Admission. Use most recent publicly available data. Example: 0 for Harvard. Make sure they actually were *accepted* into this school. If they didn't get into anything, say 3."
+        "accept_rate": "Integer: Selectivity of most selective *accepted* school. 0 = <5% (e.g., Harvard, Stanford, MIT), 1 = 5-15% (e.g., Northwestern, Cornell), 2 = 15-40% (e.g., UC Davis, Boston University), 3 = >40% (e.g., ASU) or Open Admission. Use most recent publicly available data. Example: 0 for Harvard. Make sure they actually were *accepted* into this school. If they didn't get into anything, say 3.",
     },
     "ecs": {
         "nat_int": """Integer: Number of National or International Activities in notable positions. 'Notable' means:
@@ -190,19 +191,20 @@ JSON_SCHEMAS = {
             2 = Moderate (e.g., regular volunteering at hospital, leading a school recycling program)
             3 = Significant (e.g., founding a club that provides tutoring to underprivileged students, organizing a large-scale community fundraiser)
             4 = Exceptional with measurable impact (e.g., creating a city-wide program that significantly increased youth literacy rates, founding a non-profit that provided measurable aid to a large number of people)""",
-        "ec_years": "Integer: Average years of involvement across significant extracurriculars. Sum total years of all activities and divide by number of activities. Round to nearest whole number. Example: 4 if involved in most activities for all 4 years of high school"
+        "ec_years": "Integer: Average years of involvement across significant extracurriculars. Sum total years of all activities and divide by number of activities. Round to nearest whole number. Example: 4 if involved in most activities for all 4 years of high school",
     },
     "awards": {
         "int": "Integer: Number of top-tier International Awards. Only include awards for placing 1st-10th (or equivalent prestigious recognition) in global competitions with participants from multiple countries. Examples: International Math Olympiad medalist, International Science and Engineering Fair (ISEF) Grand Award winner. Do not include qualifications or lower-level achievements in international competitions (e.g., USACO Bronze/Silver/Gold, International Chemistry Olympiad participant without placing).",
         "nat": "Integer: Number of National Awards (1st-10th place or equivalent national recognition). Include nationwide competitions, national merit, etc. Examples: National Merit Finalist, USAMO qualifier, USACO Platinum, Presidential Scholar. Do not include awards already counted in 'int'.",
         "state": "Integer: Number of State/Regional Awards (1st-10th place or equivalent). Include state competitions, regional recognitions, etc. Examples: All-State Orchestra, State Science Fair winner, Regional Math Olympiad top performer. Do not include awards already counted in 'int' or 'nat'.",
         "local": "Integer: Number of significant Local/School Awards (typically 1st-3rd place). Include school competitions, local recognitions, etc. Examples: Valedictorian, School Science Fair winner, District Math Competition top 3. Do not include awards already counted in higher categories.",
-        "other": "Integer: Number of Honorable Mentions, Participation Awards, or minor recognitions at any level. Include recognitions that don't fit in above categories or place below 3rd in local competitions. Examples: AP Scholar, Honor Roll, Participation in USACO Bronze/Silver without advancing, School 'Student of the Month'."
-    }
+        "other": "Integer: Number of Honorable Mentions, Participation Awards, or minor recognitions at any level. Include recognitions that don't fit in above categories or place below 3rd in local competitions. Examples: AP Scholar, Honor Roll, Participation in USACO Bronze/Silver without advancing, School 'Student of the Month'.",
+    },
 }
 
 
 json_string = json.dumps(JSON_SCHEMAS, indent=2)
+
 
 def process_post(post_id):
     retries = 0
@@ -212,7 +214,10 @@ def process_post(post_id):
                 model="gpt-4o",
                 messages=[
                     {"role": "system", "content": prompt},
-                    {"role": "user", "content": f"Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema. If the post lacks sufficient information to provide an accurate, consistent output, contains clearly false information, or is a joke, output only {{\"skip\": true}}. If some information is not explicitly stated, make your best reasonable inference based on context. However, if too much critical information is missing, output only {{\"skip\": true}}. Do not include any dialogue or explanations, only output valid JSON. You must output valid JSON in this format: {json_string}\nHere is the Reddit Post to analyze: {data[post_id]['link_flair_text']}\n{data[post_id]['selftext']}"}
+                    {
+                        "role": "user",
+                        "content": f"Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema. If the post lacks sufficient information to provide an accurate, consistent output, contains clearly false information, or is a joke, output only {{\"skip\": true}}. If some information is not explicitly stated, make your best reasonable inference based on context. However, if too much critical information is missing, output only {{\"skip\": true}}. Do not include any dialogue or explanations, only output valid JSON. You must output valid JSON in this format: {json_string}\nHere is the Reddit Post to analyze: {data[post_id]['link_flair_text']}\n{data[post_id]['selftext']}",
+                    },
                 ],
                 temperature=0.0,
                 seed=42,
@@ -231,6 +236,7 @@ def process_post(post_id):
             else:
                 print(f"Failed to process post id {post_id} after 10 attempts.")
 
+
 def worker(queue):
     while True:
         post_id = queue.get()
@@ -238,6 +244,7 @@ def worker(queue):
             break
         process_post(post_id)
         queue.task_done()
+
 
 def categorize():
     num_threads = 5
@@ -262,6 +269,7 @@ def categorize():
         queue.put(None)
     for t in threads:
         t.join()
+
 
 if __name__ == "__main__":
     categorize()

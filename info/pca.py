@@ -13,6 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Now we can import from the train directory
 from train.preprocessing import load_data, preprocess_data
 
+
 def perform_pca(X, n_components=None):
     # Standardize the features
     scaler = StandardScaler()
