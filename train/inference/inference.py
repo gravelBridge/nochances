@@ -232,7 +232,7 @@ def get_school_acceptance_rate_category(school_name, intended_major):
                 },
                 {
                     "role": "user",
-                    "content": f"Given the following categories for college acceptance rates:\n\n0 = <5% (e.g., Harvard, Stanford, MIT)\n1 = 5-15% (e.g., Northwestern, Cornell)\n2 = 15-40% (e.g., UC Davis, Boston University)\n3 = >40% (e.g., ASU, Rollins University) or Open Admission\n\nPlease categorize {school_name} based on its most recent publicly available acceptance rate. However, if the major: {intended_major} is known to be a competitive major at that school (e.g. CS at CMU, EECS at Berkeley), return the acceptance rate for that major at {school_name} So, you would return 0 for Berkeley EECS and 0 for CS at CMU. Return only the integer category (0, 1, 2, or 3).",
+                    "content": f"Given the following categories for college acceptance rates:\n\n0 = <5% (e.g., Harvard, Stanford, MIT)\n1 = 5-15% (e.g., Northwestern, Cornell)\n2 = 15-40% (e.g., UC Davis, Boston University)\n3 = >40% (e.g., ASU, Rollins University) or Open Admission\n\nPlease categorize {school_name} based on its most recent publicly available acceptance rate. However, if the major: {intended_major} is known to be a competitive major at that school (e.g. CS at CMU, EECS at Berkeley), return a lower category based on how competitive that major is at {school_name} So, you would return 0 for things like EECS at Berkeley and also 0 for CS at Carnegie Mellon. Return only the integer category (0, 1, 2, or 3).",
                 },
             ],
             temperature=0.0,
