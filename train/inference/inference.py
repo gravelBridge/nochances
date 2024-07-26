@@ -221,18 +221,18 @@ def process_post_with_gpt(post):
         return None
 
 
-def get_school_acceptance_rate_category(school_name):
+def get_school_acceptance_rate_category(school_name, intended_major):
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an expert in college admissions with up-to-date knowledge of acceptance rates for various universities.",
+                    "content": "You are an expert in college admissions with up-to-date knowledge of most recent acceptance rates for all universities.",
                 },
                 {
                     "role": "user",
-                    "content": f"Given the following categories for college acceptance rates:\n\n0 = <5% (e.g., Harvard, Stanford, MIT)\n1 = 5-15% (e.g., Northwestern, Cornell)\n2 = 15-40% (e.g., UC Davis, Boston University)\n3 = >40% (e.g., ASU, Rollins University) or Open Admission\n\nPlease categorize {school_name} based on its most recent publicly available acceptance rate. Return only the integer category (0, 1, 2, or 3).",
+                    "content": f"Given the following categories for college acceptance rates:\n\n0 = <5% (e.g., Harvard, Stanford, MIT)\n1 = 5-15% (e.g., Northwestern, Cornell)\n2 = 15-40% (e.g., UC Davis, Boston University)\n3 = >40% (e.g., ASU, Rollins University) or Open Admission\n\nPlease categorize {school_name} based on its most recent publicly available acceptance rate. However, if the major: {intended_major} is known to be a competitive major at that school (e.g. CS at CMU, EECS at Berkeley), return the acceptance rate for that major at {school_name} So, you would return 0 for Berkeley EECS and 0 for CS at CMU. Return only the integer category (0, 1, 2, or 3).",
                 },
             ],
             temperature=0.0,
@@ -296,7 +296,7 @@ def get_color_for_probability(probability):
     else:
         return "#4E9AC1"  # Blue
     
-def predict_acceptance(post, school_name):
+def predict_acceptance(post, school_name, intended_major):
     # Process the post with GPT
     gpt_output = process_post_with_gpt(post)
 
@@ -324,7 +324,7 @@ def predict_acceptance(post, school_name):
     ensemble_prediction = (xgb_prediction + nn_prediction) / 2
 
     # Get the school's acceptance rate category
-    school_category = get_school_acceptance_rate_category(school_name)
+    school_category = get_school_acceptance_rate_category(school_name, intended_major)
 
     if school_category is None:
         return "Unable to determine the school's acceptance rate category."
