@@ -18,7 +18,7 @@ from preprocessing import load_data, preprocess_data
 load_dotenv()
 client = OpenAI()
 
-with open("categorization/prompt.txt", "r") as f:
+with open("/home/ubuntu/nochances/categorization/prompt.txt", "r") as f:
     prompt = f.read()
 
 JSON_SCHEMAS = {
@@ -327,9 +327,9 @@ def predict_acceptance(post, school_name, intended_major):
         return "Unable to extract features from the processed data."
 
     # Load the saved models and scaler
-    xgb_model = joblib.load("models/best_model_xgb.joblib")
-    nn_model = tf.keras.models.load_model("models/best_model_nn.keras")
-    scaler = joblib.load("models/scaler.joblib")
+    xgb_model = joblib.load("/home/ubuntu/nochances/models/best_model_xgb.joblib")
+    nn_model = tf.keras.models.load_model("/home/ubuntu/nochances/models/best_model_nn.keras")
+    scaler = joblib.load("/home/ubuntu/nochances/models/scaler.joblib")
 
     # Preprocess the input data
     X_preprocessed = preprocess_data(X, is_training=False, scaler=scaler)
