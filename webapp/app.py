@@ -85,7 +85,7 @@ def index():
         school = form.school.data
         
         try:
-            prediction = predict_acceptance(post, school)
+            prediction = predict_acceptance(post, school, form.major.data)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return app.response_class(
                     response=json.dumps(prediction, default=custom_json_encoder),
