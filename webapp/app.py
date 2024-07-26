@@ -57,6 +57,7 @@ def index():
         Demographics: {form.ethnicity.data}, {form.gender.data}, {form.income_bracket.data}, {'First-Gen' if form.first_gen.data == '1' else 'Not First-Gen'}
 
         Intended Major: {form.major.data}
+        Intended School: {form.intended_school.data}
 
         Academic Info:
         GPA: {form.gpa.data}
