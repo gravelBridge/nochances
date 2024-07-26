@@ -222,3 +222,9 @@ body {
     border-bottom: 1px solid #dee2e6;
     padding: 1rem 2rem; /* Match horizontal padding with modal-body */
 }
+
+.info-icon {
+    cursor: pointer;
+    margin-left: 5px;
+    color: #007bff;
+}

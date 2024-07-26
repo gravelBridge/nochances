@@ -121,16 +121,30 @@
           form.hooks(class="form-control", rows=3) }}
         </div>
 
-        <h2 class="mb-4 mt-5">Extracurricular Activities</h2>
+        <h2 class="mb-4 mt-5">
+          Extracurricular Activities
+          <i
+            class="fas fa-info-circle info-icon"
+            data-bs-toggle="modal"
+            data-bs-target="#extracurricularModal"
+          ></i>
+        </h2>
         <div class="mb-3">
           {{ form.extracurriculars.label(class="form-label") }} {{
-          form.extracurriculars(class="form-control", rows=5) }}
+          form.extracurriculars(class="form-control", rows=8) }}
         </div>
 
-        <h2 class="mb-4 mt-5">Awards and Honors</h2>
+        <h2 class="mb-4 mt-5">
+          Awards and Honors
+          <i
+            class="fas fa-info-circle info-icon"
+            data-bs-toggle="modal"
+            data-bs-target="#awardsModal"
+          ></i>
+        </h2>
         <div class="mb-3">
           {{ form.awards.label(class="form-label") }} {{
-          form.awards(class="form-control", rows=5) }}
+          form.awards(class="form-control", rows=8) }}
         </div>
 
         <div class="mb-4 text-center">
@@ -552,6 +566,132 @@
               We're always open to partnerships that can help us improve our
               tool and make it more accessible to students worldwide.
             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extracurricular Activities Modal -->
+    <div
+      class="modal fade"
+      id="extracurricularModal"
+      tabindex="-1"
+      aria-labelledby="extracurricularModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="extracurricularModalLabel">
+              Extracurricular Activities Example (from redd.it/1ebnqdt)
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li>
+                Computational Bio Research with prof - three years, found
+                through cold emailing, published in a reputed journal as second
+                author, presented at 2 international conferences, high impact +
+                glowing letter of rec
+              </li>
+              <li>
+                Nonprofit helping underprivileged kids in STEM across three
+                countries-super high impact, multiple national awards, newspaper
+                article, state senator recognition. Didn't do this for the app,
+                started in 7th grade and it's probably the most meaningful EC to
+                me
+              </li>
+              <li>
+                Research summer program - super competitive, no cost, didn't
+                publish but led to my next EC. Probably got in based on my math
+                teacher's rec
+              </li>
+              <li>
+                Self conducted math research - two years, discovered an
+                interesting pattern in number theory, published in legitimate
+                math journal, presented at T50 university with professors
+              </li>
+              <li>
+                CS internship - 2 years (return offer), paid, building AI models
+                for social causes with a huge nonprofit, showed real impact over
+                two years in the sector of the community I was targeting, essay
+                topic
+              </li>
+              <li>
+                Cultural singer - singing cultural music from my country for
+                years, teach younger kids, perform at festivals, submitted
+                portfolio (I've gotten really good at it)
+              </li>
+              <li>
+                Math club - president of school district's math club, organized
+                school competitions + Olympiads, taught members Olympiad level
+                topics
+              </li>
+              <li>
+                Medical device research - self designed and created prototype
+                for medical device for administering medicines to elderly people
+                (can't go into too much detail or I'll get doxxed), filed for a
+                patent (still in the process), donated 500 devices to a local
+                nursing home. Inspired by my grandparents difficulties with
+                medication
+              </li>
+              <li>
+                Congressional intern - I noticed a really crappy policy
+                negatively impacting underprivileged children's STEM education
+                in my area during my nonprofit work, interned with a
+                congresswoman and lobbied for state legislation to change that
+                policy and allocate more funding to those schools
+              </li>
+              <li>
+                Homeless shelter volunteer - lot of hours, I was just a regular
+                volunteer but this EC was very impactful to me
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Awards and Honors Modal -->
+    <div
+      class="modal fade"
+      id="awardsModal"
+      tabindex="-1"
+      aria-labelledby="awardsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="awardsModalLabel">
+              Awards and Honors Example (from redd.it/1ebnqdt)
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li>2 well known national awards for my nonprofit</li>
+              <li>USAMO (2x), USAJMO (1x) qualifier</li>
+              <li>1st place state science fair + ISEF</li>
+              <li>
+                3 state level (approximately?) + 1 national hackathon winner
+              </li>
+              <li>
+                Best student researcher (high school + UG) awarded by the bio
+                department of the university I interned at (EC #1)
+              </li>
+            </ul>
           </div>
         </div>
       </div>
