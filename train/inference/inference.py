@@ -238,7 +238,7 @@ Categorize {school_name}'s acceptance rate using the following scale:
 1 = 5-15% (e.g., Northwestern, Cornell)
 2 = 15-40% (e.g., UC Davis, Boston University)
 3 = >40% (e.g., ASU, Rollins University) or Open Admission
-Use the most recent publicly available overall acceptance rate for initial categorization. Then, adjust the category if the intended major ({intended_major}) is known to be significantly more competitive at {school_name}.
+Use the most recent publicly available overall acceptance rate for initial categorization. Then, adjust the category if the intended major ({intended_major}) is known to be significantly more competitive at {school_name} Only change school category if the change would result in a lower integer.
 Examples of major-specific adjustments:
 
 Computer Science at Carnegie Mellon: Category 0
