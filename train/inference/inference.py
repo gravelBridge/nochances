@@ -228,7 +228,7 @@ def get_school_acceptance_rate_category(school_name, intended_major):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an expert in college admissions with up-to-date knowledge of most recent acceptance rates for all universities.",
+                    "content": "You are an expert in college admissions with up-to-date knowledge of most recent acceptance rates for all universities. CRITICAL: You only return an integer (0, 1, 2, or 3), and nothing else.",
                 },
                 {
                     "role": "user",
