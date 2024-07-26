@@ -66,6 +66,6 @@ class PredictionForm(FlaskForm):
     ], validators=[DataRequired()])
     languages = StringField('Number of Languages Known', validators=[DataRequired()])
     hooks = TextAreaField('Hooks (if any)')
-    extracurriculars = TextAreaField('The more detailed and comprehensive you are, the more accurate our result is!', validators=[DataRequired()])
-    awards = TextAreaField('The more detailed and comprehensive you are, the more accurate our result is!', validators=[DataRequired()])
+    extracurriculars = TextAreaField('The more detailed and comprehensive you are, the more accurate our result is!\nList all extracurricular involvements, including leadership roles, time commitments, major achievements, etc.', validators=[DataRequired()])
+    awards = TextAreaField('The more detailed and comprehensive you are, the more accurate our result is!\nList all awards and honors you will submit on your application.', validators=[DataRequired()])
     submit = SubmitField('Predict')
