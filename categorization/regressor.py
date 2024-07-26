@@ -7,7 +7,7 @@ class CollegeResultsDataset(torch.utils.data.Dataset):
         self.tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
         self.stopwords = stopwords
         self.embedding_dim = 16
-        self.num_embeddings_list = [2, 3, 5, 5, 40, 5, 5, 2, 4, len(colleges_list)]
+        self.num_embeddings_list = [2, 3, 5, 5, 100, 5, 5, 2, 4, len(colleges_list)]
         self.model = DistilBertModel.from_pretrained("distilbert-base-uncased")
 
         for post_id, post in data.items():
