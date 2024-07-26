@@ -1,0 +1,224 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Space Grotesk', sans-serif;
+    position: relative;
+    min-height: 100vh;
+}
+
+.btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+}
+
+.container {
+    max-width: 800px;
+    padding-bottom: 80px;
+    /* Space for bottom buttons */
+}
+
+.main-title {
+    font-family: 'Figtree', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #007bff;
+    letter-spacing: -0.5px;
+}
+
+.prediction-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.form-control {
+    border-radius: 5px;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.bottom-right-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.btn-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: none;
+    font-size: 1.2rem;
+}
+
+.btn-icon:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.left-buttons,
+.right-buttons {
+    flex: 1;
+}
+
+.right-buttons {
+    text-align: right;
+}
+
+.main-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
+    flex: 2;
+    text-align: center;
+}
+
+.prediction-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.form-control {
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.prediction-result {
+    padding: 40px 20px;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+}
+
+.prediction-result p {
+    margin: 0;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.modal-body.results {
+    padding: 30px;
+}
+
+.result-item {
+    margin-bottom: 10px;
+}
+
+.result-label {
+    font-weight: bold;
+}
+
+.loading-spinner {
+    margin-top: 30px;
+}
+
+.modal-body h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.modal-body ul {
+    padding-left: 1.5rem;
+}
+
+.modal-body ol {
+    padding-left: 1.5rem;
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 1rem 2rem; /* Increased horizontal padding */
+}
+
+.modal-body h6:first-of-type {
+    margin-top: 0; /* Remove top margin for the first h6 element */
+}
+
+.modal-body h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.modal-body p, .modal-body ul {
+    margin-bottom: 1rem; /* Add some space after paragraphs and lists */
+}
+
+.modal-body ul {
+    padding-left: 1.5rem;
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 2rem; /* Match horizontal padding with modal-body */
+}
