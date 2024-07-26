@@ -103,4 +103,7 @@ def index():
     return render_template('index.html', form=form)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if os.environ.get("production")=="true":
+        app.run(host='0.0.0.0')
+    else:
+        app.run(debug=True)
