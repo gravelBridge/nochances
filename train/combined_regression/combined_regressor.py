@@ -53,21 +53,21 @@ class CombinedResultRegressor(torch.nn.Module):
     def __init__(self):
         super(CombinedResultRegressor, self).__init__()
         self.bc1 = torch.nn.Linear(34, 34)
-        self.bc2 = torch.nn.Linear(768, 10)
-        self.bc3 = torch.nn.Linear(768, 5)
+        self.bc2 = torch.nn.Linear(768, 20)
+        self.bc3 = torch.nn.Linear(768, 10)
         self.bc4 = torch.nn.Linear(768, 500)
-        self.bc4 = torch.nn.Linear(768, 75)
+        self.bc5 = torch.nn.Linear(768, 150)
 
-        self.fc1 = torch.nn.Linear(624, 512)
-        self.fc2 = torch.nn.Linear(512, 256)
+        self.fc1 = torch.nn.Linear(714, 1024)
+        self.fc2 = torch.nn.Linear(1024, 256)
         self.fc3 = torch.nn.Linear(256, 64)
         self.fc4 = torch.nn.Linear(64, 1)
 
-        self.layernorm0 = torch.nn.LayerNorm(34)
-        self.layernorm1 = torch.nn.LayerNorm(624)
-        self.layernorm2 = torch.nn.LayerNorm(512)
-        self.layernorm3 = torch.nn.LayerNorm(256)
-        self.layernorm4 = torch.nn.LayerNorm(64)
+        self.layernorm0 = torch.nn.BatchNorm1d(34)
+        self.layernorm1 = torch.nn.BatchNorm1d(714)
+        self.layernorm2 = torch.nn.BatchNorm1d(1024)
+        self.layernorm3 = torch.nn.BatchNorm1d(256)
+        self.layernorm4 = torch.nn.BatchNorm1d(64)
 
         self.dropout = torch.nn.Dropout(0.5)
         self.activation = torch.nn.GELU()
@@ -77,14 +77,14 @@ class CombinedResultRegressor(torch.nn.Module):
         
         major = self.dropout(self.activation(self.bc2(batch['major_embedding'])))
         residence = self.dropout(self.activation(self.bc3(batch['residence_embedding'])))
-        ecs = self.dropout(self.activation(self.bc4(batch['ecs_embedding'])))
-        awards = self.dropout(self.activation(self.bc4(batch['awards_embedding'])))
+        ecs = self.dropout(self.activation(self.bc4(batch['extracurriculars_embedding'])))
+        awards = self.dropout(self.activation(self.bc5(batch['awards_embedding'])))
 
         combined_input = self.layernorm1(torch.cat([numerical_inputs, major, residence, ecs, awards], dim=1))
 
         x = self.dropout(self.activation(self.layernorm2(self.fc1(combined_input))))
-        x = self.dropout(self.activation(self.layernorm3(self.fc2(combined_input))))
-        x = self.dropout(self.activation(self.layernorm4(self.fc3(combined_input))))
+        x = self.activation(self.layernorm3(self.fc2(x)))
+        x = self.activation(self.layernorm4(self.fc3(x)))
         x = self.dropout(self.fc4(x))
 
         return torch.sigmoid(x.squeeze(dim=1))
