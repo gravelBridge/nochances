@@ -221,7 +221,7 @@ def process_post_with_gpt(post):
         return None
 
 
-def get_school_acceptance_rate_category(school_name, intended_major):
+def get_school_acceptance_rate_category(school_name):
     try:
         completion = client.chat.completions.create(
             model="gpt-4o",
@@ -233,25 +233,14 @@ def get_school_acceptance_rate_category(school_name, intended_major):
                 {
                     "role": "user",
 "content": f"""
-Categorize {school_name}'s acceptance rate using the following scale:
+Categorize {school_name} based on their acceptance rate using the following scale:
 0 = <5% (e.g., Harvard, Stanford, MIT)
-1 = 5-15% (e.g., Northwestern, Cornell)
+1 = 5-15% (e.g., Northwestern, Cornell, UC Berkeley)
 2 = 15-40% (e.g., UC Davis, Boston University)
 3 = >40% (e.g., ASU, Rollins University) or Open Admission
-Use the most recent publicly available overall acceptance rate for initial categorization. Then, adjust the category if the intended major ({intended_major}) is known to be significantly more competitive at {school_name} Only change school category if the change would result in a lower integer.
-Examples of major-specific adjustments:
+Use the most recent publicly available overall acceptance rate for categorization.
 
-Computer Science at Carnegie Mellon: Category 0
-EECS at UC Berkeley: Category 0
-Engineering at Georgia Tech: Lower category than overall admission
-
-Consider factors like:
-
-Department-specific acceptance rates (if available)
-Reputation of the program within the field
-Historical data on major competitiveness
-
-Return only the integer category (0, 1, 2, or 3) that best represents the difficulty of admission for {intended_major} at {school_name}.
+Return only the integer category (0, 1, 2, or 3) that best represents the acceptance rate of {school_name}.
 """                },
             ],
             temperature=0.0,
@@ -314,7 +303,7 @@ def get_color_for_probability(probability):
     else:
         return "#4E9AC1"  # Blue
     
-def predict_acceptance(post, school_name, intended_major):
+def predict_acceptance(post, school_name):
     # Process the post with GPT
     gpt_output = process_post_with_gpt(post)
 
@@ -342,7 +331,7 @@ def predict_acceptance(post, school_name, intended_major):
     ensemble_prediction = (xgb_prediction + nn_prediction) / 2
 
     # Get the school's acceptance rate category
-    school_category = get_school_acceptance_rate_category(school_name, intended_major)
+    school_category = get_school_acceptance_rate_category(school_name)
 
     if school_category is None:
         return "Unable to determine the school's acceptance rate category."

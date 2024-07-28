@@ -53,39 +53,11 @@ def index():
             return render_template('index.html', form=form)
 
         # Construct the post string from form data
-        post = f"""
-        Demographics: {form.ethnicity.data}, {form.gender.data}, {form.income_bracket.data}, {'First-Gen' if form.first_gen.data == '1' else 'Not First-Gen'}
-
-        Intended Major: {form.major.data}
-        Intended School: {form.school.data}
-
-        Academic Info:
-        GPA: {form.gpa.data}
-        Test Score: {form.test_score.data}
-        AP/IB Courses: {form.ap_ib_courses.data}
-        AP/IB Scores: {form.ap_ib_scores.data}
-
-        Additional Info:
-        Application Round: {form.app_round.data}
-        Location: {form.location.data}
-        State Status: {form.state_status.data}
-        Legacy: {form.legacy.data}
-        Languages: {form.languages.data}
-
-        Hooks:
-        {form.hooks.data}
-
-        Extracurricular Activities:
-        {form.extracurriculars.data}
-
-        Awards and Honors:
-        {form.awards.data}
-        """
+        post = f"{form.info.data}\nWant to go to {form.school.data}"
         
         school = form.school.data
-        
         try:
-            prediction = predict_acceptance(post, school, form.major.data)
+            prediction = predict_acceptance(post, school)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return app.response_class(
                     response=json.dumps(prediction, default=custom_json_encoder),

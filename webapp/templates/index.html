@@ -35,116 +35,22 @@
       >
         {{ form.hidden_tag() }}
 
-        <h2 class="mb-4">Basic Information</h2>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.ethnicity.label(class="form-label") }} {{
-            form.ethnicity(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.gender.label(class="form-label") }} {{
-            form.gender(class="form-control") }}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.income_bracket.label(class="form-label") }} {{
-            form.income_bracket(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.first_gen.label(class="form-label") }} {{
-            form.first_gen(class="form-control") }}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.school.label(class="form-label") }} {{
-            form.school(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.major.label(class="form-label") }} {{
-            form.major(class="form-control") }}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.app_round.label(class="form-label") }} {{
-            form.app_round(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.languages.label(class="form-label") }} {{
-            form.languages(class="form-control") }}
-          </div>
-        </div>
-
-        <h2 class="mb-4 mt-5">Academic Information</h2>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.gpa.label(class="form-label") }} {{
-            form.gpa(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.test_score.label(class="form-label") }} {{
-            form.test_score(class="form-control") }}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.ap_ib_courses.label(class="form-label") }} {{
-            form.ap_ib_courses(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.ap_ib_scores.label(class="form-label") }} {{
-            form.ap_ib_scores(class="form-control") }}
-          </div>
-        </div>
-
-        <h2 class="mb-4 mt-5">Additional Information</h2>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.location.label(class="form-label") }} {{
-            form.location(class="form-control") }}
-          </div>
-          <div class="col-md-6 mb-3">
-            {{ form.state_status.label(class="form-label") }} {{
-            form.state_status(class="form-control") }}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            {{ form.legacy.label(class="form-label") }} {{
-            form.legacy(class="form-control") }}
-          </div>
-        </div>
         <div class="mb-3">
-          {{ form.hooks.label(class="form-label") }} {{
-          form.hooks(class="form-control", rows=3) }}
+          {{ form.school.label(class="form-label") }} {{
+          form.school(class="form-control") }}
         </div>
 
-        <h2 class="mb-4 mt-5">
-          Extracurricular Activities
-          <i
-            class="fas fa-info-circle info-icon"
-            data-bs-toggle="modal"
-            data-bs-target="#extracurricularModal"
-          ></i>
-        </h2>
         <div class="mb-3">
-          {{ form.extracurriculars.label(class="form-label") }} {{
-          form.extracurriculars(class="form-control", rows=8) }}
-        </div>
-
-        <h2 class="mb-4 mt-5">
-          Awards and Honors
-          <i
-            class="fas fa-info-circle info-icon"
-            data-bs-toggle="modal"
-            data-bs-target="#awardsModal"
-          ></i>
-        </h2>
-        <div class="mb-3">
-          {{ form.awards.label(class="form-label") }} {{
-          form.awards(class="form-control", rows=8) }}
+          {{ form.info.label(class="form-label") }}
+          <span class="ms-2">
+            <i
+              class="fas fa-info-circle"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleApplicationModal"
+              title="Example Application"
+            ></i>
+          </span>
+          {{ form.info(class="form-control", rows=20) }}
         </div>
 
         <div class="mb-4 text-center">
@@ -573,22 +479,19 @@
       </div>
     </div>
 
-    <!-- Extracurricular Activities Modal -->
+    <!-- Example Application Modal -->
     <div
       class="modal fade"
-      id="extracurricularModal"
+      id="exampleApplicationModal"
       tabindex="-1"
-      aria-labelledby="extracurricularModalLabel"
+      aria-labelledby="exampleApplicationModalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="extracurricularModalLabel">
-              Extracurricular Activities Example (from
-              <a href="https://redd.it/1ebnqdt" target="_blank"
-                >redd.it/1ebnqdt</a
-              >)
+            <h5 class="modal-title" id="exampleApplicationModalLabel">
+              Example Application
             </h5>
             <button
               type="button"
@@ -598,106 +501,84 @@
             ></button>
           </div>
           <div class="modal-body">
+            <h6>Demographics</h6>
             <ul>
+              <li>Gender: Male</li>
+              <li>Race/Ethnicity: Asian</li>
+              <li>Residence: Competitive East Coast area</li>
+              <li>Income Bracket: $500k+</li>
+              <li>Type of School: Competitive public</li>
+              <li>Hooks: First-Gen</li>
+              <li>Intended Major(s): Computer Science, Biology</li>
+            </ul>
+
+            <h6>Academics</h6>
+            <ul>
+              <li>GPA (UW/W): 4.0</li>
+              <li>Rank (or percentile): 2/~550</li>
+              <li># of Honors/AP/IB/Dual Enrollment/etc.: 19 APs</li>
               <li>
-                Computational Bio Research with prof - three years, found
-                through cold emailing, published in a reputed journal as second
-                author, presented at 2 international conferences, high impact +
-                glowing letter of rec
+                Senior Year Course Load: Multivariable Calc, Differential
+                equations, Linear algebra, Real Analysis, AP PhysicsE&M, AP
+                Lang, AP Gov, Choir, Ap Psych, AP Spanish
+              </li>
+            </ul>
+
+            <h6>Standardized Testing</h6>
+            <ul>
+              <li>SAT I: 1580 (800 Math)</li>
+              <li>ACT: 36</li>
+              <li>
+                AP/IB: thirteen 5's and one 4 at time of application (submitted
+                all tests to colleges)
+              </li>
+            </ul>
+
+            <h6>Extracurriculars/Activities</h6>
+            <ol>
+              <li>
+                Computational Bio Research with prof - three years, published in
+                reputed journal, presented at conferences
               </li>
               <li>
                 Nonprofit helping underprivileged kids in STEM across three
-                countries-super high impact, multiple national awards, newspaper
-                article, state senator recognition. Didn't do this for the app,
-                started in 7th grade and it's probably the most meaningful EC to
-                me
+                countries - high impact, multiple awards
+              </li>
+              <li>Research summer program - competitive, no cost</li>
+              <li>
+                Self-conducted math research - published in math journal,
+                presented at T50 university
               </li>
               <li>
-                Research summer program - super competitive, no cost, didn't
-                publish but led to my next EC. Probably got in based on my math
-                teacher's rec
+                CS internship - 2 years, paid, building AI models for social
+                causes
               </li>
               <li>
-                Self conducted math research - two years, discovered an
-                interesting pattern in number theory, published in legitimate
-                math journal, presented at T50 university with professors
+                Cultural singer - teaching younger kids, performing at festivals
               </li>
               <li>
-                CS internship - 2 years (return offer), paid, building AI models
-                for social causes with a huge nonprofit, showed real impact over
-                two years in the sector of the community I was targeting, essay
-                topic
-              </li>
-              <li>
-                Cultural singer - singing cultural music from my country for
-                years, teach younger kids, perform at festivals, submitted
-                portfolio (I've gotten really good at it)
-              </li>
-              <li>
-                Math club - president of school district's math club, organized
-                school competitions + Olympiads, taught members Olympiad level
+                Math club president - organized competitions, taught Olympiad
                 topics
               </li>
               <li>
-                Medical device research - self designed and created prototype
-                for medical device for administering medicines to elderly people
-                (can't go into too much detail or I'll get doxxed), filed for a
-                patent (still in the process), donated 500 devices to a local
-                nursing home. Inspired by my grandparents difficulties with
-                medication
+                Medical device research - designed prototype, filed for patent,
+                donated devices
               </li>
               <li>
-                Congressional intern - I noticed a really crappy policy
-                negatively impacting underprivileged children's STEM education
-                in my area during my nonprofit work, interned with a
-                congresswoman and lobbied for state legislation to change that
-                policy and allocate more funding to those schools
+                Congressional intern - lobbied for state legislation to improve
+                STEM education
               </li>
-              <li>
-                Homeless shelter volunteer - lot of hours, I was just a regular
-                volunteer but this EC was very impactful to me
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
+              <li>Homeless shelter volunteer - regular volunteer</li>
+            </ol>
 
-    <!-- Awards and Honors Modal -->
-    <div
-      class="modal fade"
-      id="awardsModal"
-      tabindex="-1"
-      aria-labelledby="awardsModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="awardsModalLabel">
-              Awards and Honors Example (from
-              <a href="https://redd.it/1ebnqdt" target="_blank"
-                >redd.it/1ebnqdt</a
-              >)
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
+            <h6>Awards/Honors</h6>
             <ul>
-              <li>2 well known national awards for my nonprofit</li>
+              <li>2 well-known national awards for nonprofit</li>
               <li>USAMO (2x), USAJMO (1x) qualifier</li>
               <li>1st place state science fair + ISEF</li>
+              <li>3 state level + 1 national hackathon winner</li>
               <li>
-                3 state level (approximately?) + 1 national hackathon winner
-              </li>
-              <li>
-                Best student researcher (high school + UG) awarded by the bio
-                department of the university I interned at (EC #1)
+                Best student researcher award from university bio department
               </li>
             </ul>
           </div>
