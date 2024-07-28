@@ -52,19 +52,19 @@ class CombinedCollegeResultsDataset(torch.utils.data.Dataset):
 class CombinedResultRegressor(torch.nn.Module):
     def __init__(self):
         super(CombinedResultRegressor, self).__init__()
-        self.bc1 = torch.nn.Linear(34, 34)
+        self.bc1 = torch.nn.Linear(34, 50)
         self.bc2 = torch.nn.Linear(768, 20)
         self.bc3 = torch.nn.Linear(768, 10)
         self.bc4 = torch.nn.Linear(768, 500)
         self.bc5 = torch.nn.Linear(768, 150)
 
-        self.fc1 = torch.nn.Linear(714, 1024)
+        self.fc1 = torch.nn.Linear(730, 1024)
         self.fc2 = torch.nn.Linear(1024, 256)
         self.fc3 = torch.nn.Linear(256, 64)
         self.fc4 = torch.nn.Linear(64, 1)
 
-        self.layernorm0 = torch.nn.BatchNorm1d(34)
-        self.layernorm1 = torch.nn.BatchNorm1d(714)
+        self.layernorm0 = torch.nn.BatchNorm1d(50)
+        self.layernorm1 = torch.nn.BatchNorm1d(730)
         self.layernorm2 = torch.nn.BatchNorm1d(1024)
         self.layernorm3 = torch.nn.BatchNorm1d(256)
         self.layernorm4 = torch.nn.BatchNorm1d(64)
@@ -83,8 +83,8 @@ class CombinedResultRegressor(torch.nn.Module):
         combined_input = self.layernorm1(torch.cat([numerical_inputs, major, residence, ecs, awards], dim=1))
 
         x = self.dropout(self.activation(self.layernorm2(self.fc1(combined_input))))
-        x = self.activation(self.layernorm3(self.fc2(x)))
-        x = self.activation(self.layernorm4(self.fc3(x)))
-        x = self.dropout(self.fc4(x))
+        x = self.dropout(self.activation(self.layernorm3(self.fc2(x))))
+        x = self.dropout(self.activation(self.layernorm4(self.fc3(x))))
+        x = self.fc4(x)
 
         return torch.sigmoid(x.squeeze(dim=1))
