@@ -203,7 +203,7 @@ json_string = json.dumps(JSON_SCHEMAS, indent=2)
 def process_post_with_gpt(post):
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": prompt},
                 {
@@ -282,7 +282,7 @@ def calculate_acceptance_probability(ensemble_prediction, school_category):
     adjusted_prediction = ensemble_prediction - school_category
 
     # Define the logistic function parameters
-    k = 1
+    k = 4
     x0 = 0.5
 
     # Calculate the base probability using a modified logistic function
