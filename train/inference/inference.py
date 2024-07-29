@@ -221,7 +221,7 @@ def process_post_with_gpt(post):
         return None
 
 
-def get_school_acceptance_rate_category(school_name):
+def get_school_acceptance_rate_category(school_name, intended_major):
     try:
         completion = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -233,22 +233,25 @@ def get_school_acceptance_rate_category(school_name):
                 {
                     "role": "user",
                     "content": f"""
-Categorize {school_name} based on its most recent publicly available overall acceptance rate using the following categories:
+Categorize {school_name}'s acceptance rate using the following scale:
+0 = <5% (e.g., Harvard, Stanford, MIT)
+1 = 5-15% (e.g., Northwestern, Cornell)
+2 = 15-40% (e.g., UC Davis, Boston University)
+3 = >40% (e.g., ASU, Rollins University) or Open Admission
+Use the most recent publicly available overall acceptance rate for initial categorization. Then, adjust the category if the intended major ({intended_major}) is known to be significantly more competitive at {school_name} Only change school category if the change would result in a lower integer.
+Examples of major-specific adjustments:
 
-0: Extremely selective (acceptance rate < 5%)
-1: Highly selective (acceptance rate 5-15%)
-2: Selective (acceptance rate 15-40%)
-3: Less selective or Open Admission (acceptance rate > 40%)
+Computer Science at Carnegie Mellon: Category 0
+EECS at UC Berkeley: Category 0
+Engineering at Georgia Tech: Lower category than overall admission
 
-Examples:
-- Category 0: Harvard, Stanford, MIT
-- Category 1: Northwestern, Cornell, UC Berkeley, UCLA
-- Category 2: UC Davis, Boston University
-- Category 3: Arizona State University, Rollins University
+Consider factors like:
 
-If you're unsure about the exact acceptance rate, use your best judgment based on the university's reputation and selectivity.
+Department-specific acceptance rates (if available)
+Reputation of the program within the field
+Historical data on major competitiveness
 
-IMPORTANT: Return ONLY the integer (0, 1, 2, or 3) that best represents the acceptance rate category for {school_name}. Do not include any explanations or additional text.
+Return only the integer category (0, 1, 2, or 3) that best represents the difficulty of admission for {intended_major} at {school_name}.
 """
                 },
             ],
@@ -312,7 +315,7 @@ def get_color_for_probability(probability):
     else:
         return "#4E9AC1"  # Blue
     
-def predict_acceptance(post, school_name):
+def predict_acceptance(post, school_name, major):
     # Process the post with GPT
     gpt_output = process_post_with_gpt(post)
 
@@ -335,7 +338,7 @@ def predict_acceptance(post, school_name):
     nn_prediction = nn_model.predict(X_preprocessed).flatten()[0]
 
     # Get the school's acceptance rate category
-    school_category = get_school_acceptance_rate_category(school_name)
+    school_category = get_school_acceptance_rate_category(school_name, major)
 
     if school_category is None:
         return "Unable to determine the school's acceptance rate category."

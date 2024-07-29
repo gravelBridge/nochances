@@ -53,11 +53,12 @@ def index():
             return render_template('index.html', form=form)
 
         # Construct the post string from form data
-        post = f"{form.info.data}\nWant to go to {form.school.data}"
+        post = f"{form.info.data}\nWant to go to {form.school.data}, applying to the {form.app_round.data} round, majoring in {form.major.data}\n\n"
         
         school = form.school.data
+        major = form.major.data
         try:
-            prediction = predict_acceptance(post, school)
+            prediction = predict_acceptance(post, school, major)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return app.response_class(
                     response=json.dumps(prediction, default=custom_json_encoder),

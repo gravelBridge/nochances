@@ -41,6 +41,16 @@
         </div>
 
         <div class="mb-3">
+          {{ form.major.label(class="form-label") }} {{
+          form.major(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
+          {{ form.app_round.label(class="form-label") }} {{
+          form.app_round(class="form-control") }}
+        </div>
+
+        <div class="mb-3">
           {{ form.info.label(class="form-label") }}
           <span class="ms-2">
             <i
@@ -516,7 +526,6 @@
               <li>Income Bracket: $500k+</li>
               <li>Type of School: Competitive public</li>
               <li>Hooks: First-Gen</li>
-              <li>Intended Major(s): Computer Science, Biology</li>
             </ul>
 
             <h6>Academics</h6>
