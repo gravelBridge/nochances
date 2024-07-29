@@ -328,7 +328,7 @@ def predict_acceptance(post, school_name, major):
         return "Unable to extract features from the processed data."
 
     # Load the saved models and scaler
-    xgb_model = joblib.load("models/best_model_xgb.joblib")
+    xgb_model = joblib.load("/home/ubuntu/nochances/models/best_model_xgb.joblib")
     nn_model = tf.keras.models.load_model("/home/ubuntu/nochances/models/best_model_nn.keras")
     scaler = joblib.load("/home/ubuntu/nochances/models/scaler.joblib")
 
