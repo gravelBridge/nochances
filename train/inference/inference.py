@@ -325,7 +325,6 @@ def predict_acceptance(post, school_name):
         return "Unable to extract features from the processed data."
 
     # Load the saved models and scaler
-    xgb_model = joblib.load("/home/ubuntu/nochances/models/best_model_xgb.joblib")
     nn_model = tf.keras.models.load_model("/home/ubuntu/nochances/models/best_model_nn.keras")
     scaler = joblib.load("/home/ubuntu/nochances/models/scaler.joblib")
 
@@ -333,11 +332,7 @@ def predict_acceptance(post, school_name):
     X_preprocessed = preprocess_data(X, is_training=False, scaler=scaler)
 
     # Make predictions
-    xgb_prediction = xgb_model.predict(X_preprocessed)[0]
     nn_prediction = nn_model.predict(X_preprocessed).flatten()[0]
-
-    # Ensemble prediction (average of XGBoost and Neural Network)
-    ensemble_prediction = (xgb_prediction + nn_prediction) / 2
 
     # Get the school's acceptance rate category
     school_category = get_school_acceptance_rate_category(school_name)
@@ -349,11 +344,9 @@ def predict_acceptance(post, school_name):
     probability = calculate_acceptance_probability(nn_prediction, school_category)
     # Convert non-serializable types
     result = {
-        "ensemble_prediction": float(ensemble_prediction),
         "school_category": int(school_category),
         "acceptance_probability": float(probability),
         "nn_prediction": float(nn_prediction),
-        "xgb_prediction": float(xgb_prediction),
         "color": get_color_for_probability(probability)
     }
 
