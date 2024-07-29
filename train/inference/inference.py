@@ -203,7 +203,7 @@ json_string = json.dumps(JSON_SCHEMAS, indent=2)
 def process_post_with_gpt(post):
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": prompt},
                 {
