@@ -224,24 +224,33 @@ def process_post_with_gpt(post):
 def get_school_acceptance_rate_category(school_name):
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an expert in college admissions with up-to-date knowledge of most recent acceptance rates for all universities. CRITICAL: You only return an integer (0, 1, 2, or 3), and nothing else.",
+                    "content": "You are an AI assistant with extensive knowledge of university acceptance rates. Your task is to categorize universities based on their most recent publicly available overall acceptance rate. Respond ONLY with the appropriate category number (0, 1, 2, or 3) and nothing else.",
                 },
                 {
                     "role": "user",
-"content": f"""
-Categorize {school_name} based on their acceptance rate using the following scale:
-0 = <5% (e.g., Harvard, Stanford, MIT)
-1 = 5-15% (e.g., Northwestern, Cornell, UC Berkeley)
-2 = 15-40% (e.g., UC Davis, Boston University)
-3 = >40% (e.g., ASU, Rollins University) or Open Admission
-Use the most recent publicly available overall acceptance rate for categorization.
+                    "content": f"""
+Categorize {school_name} based on its most recent publicly available overall acceptance rate using the following categories:
 
-Return only the integer category (0, 1, 2, or 3) that best represents the acceptance rate of {school_name}.
-"""                },
+0: Extremely selective (acceptance rate < 5%)
+1: Highly selective (acceptance rate 5-15%)
+2: Selective (acceptance rate 15-40%)
+3: Less selective or Open Admission (acceptance rate > 40%)
+
+Examples:
+- Category 0: Harvard, Stanford, MIT
+- Category 1: Northwestern, Cornell, UC Berkeley, UCLA
+- Category 2: UC Davis, Boston University
+- Category 3: Arizona State University, Rollins University
+
+If you're unsure about the exact acceptance rate, use your best judgment based on the university's reputation and selectivity.
+
+IMPORTANT: Return ONLY the integer (0, 1, 2, or 3) that best represents the acceptance rate category for {school_name}. Do not include any explanations or additional text.
+"""
+                },
             ],
             temperature=0.0,
             seed=42,
@@ -270,7 +279,7 @@ def calculate_acceptance_probability(ensemble_prediction, school_category):
     adjusted_prediction = ensemble_prediction - school_category
 
     # Define the logistic function parameters
-    k = 3
+    k = 1
     x0 = 0.5
 
     # Calculate the base probability using a modified logistic function
@@ -337,7 +346,7 @@ def predict_acceptance(post, school_name):
         return "Unable to determine the school's acceptance rate category."
 
     # Calculate the probability of acceptance
-    probability = calculate_acceptance_probability(ensemble_prediction, school_category)
+    probability = calculate_acceptance_probability(nn_prediction, school_category)
     # Convert non-serializable types
     result = {
         "ensemble_prediction": float(ensemble_prediction),
