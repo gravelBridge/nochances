@@ -17,3 +17,4 @@ imblearn
 flask
 flask-wtf
 requests
+anthropic

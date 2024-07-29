@@ -1,4 +1,3 @@
-from openai import OpenAI
 import json
 from dotenv import load_dotenv
 import time
@@ -10,13 +9,14 @@ import sys
 import os
 import tensorflow as tf
 import math
+import anthropic
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from preprocessing import load_data, preprocess_data
 
 load_dotenv()
-client = OpenAI()
+client = anthropic.Anthropic()
 
 with open("/home/ubuntu/nochances/categorization/prompt.txt", "r") as f:
     prompt = f.read()
@@ -202,20 +202,45 @@ json_string = json.dumps(JSON_SCHEMAS, indent=2)
 
 def process_post_with_gpt(post):
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4o",
+        completion = client.messages.create(
+            model="claude-3-5-sonnet-20240620",
+            max_tokens=1000,
+            temperature=0,    
+            system = prompt,
             messages=[
-                {"role": "system", "content": prompt},
                 {
                     "role": "user",
-                    "content": f'Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema. If the post lacks sufficient information to provide an accurate, consistent output, contains clearly false information, or is a joke, output only {{"skip": true}}. If some information is not explicitly stated, make your best reasonable inference based on context. However, if too much critical information is missing, output only {{"skip": true}}. Do not include any dialogue or explanations, only output valid JSON. You must output valid JSON in this format: {json_string}\nHere is the Reddit Post to analyze:\n{post}',
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": f'Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema. If the post lacks sufficient information to provide an accurate, consistent output, contains clearly false information, or is a joke, output only {{"skip": true}}. If some information is not explicitly stated, make your best reasonable inference based on context. However, if too much critical information is missing, output only {{"skip": true}}. Do not include any dialogue or explanations, only output valid JSON. You must output valid JSON in this format: {json_string}\nHere is the Reddit Post to analyze:\n{post}',
+                        }
+                    ]
                 },
             ],
-            temperature=0.0,
-            seed=42,
-            response_format={"type": "json_object"},
         )
-        return json.loads(completion.choices[0].message.content)
+        
+        # Print the raw content for debugging
+        print("Raw GPT response:", completion.content)
+        
+        # Extract text from TextBlock if necessary
+        if isinstance(completion.content, list) and len(completion.content) > 0 and hasattr(completion.content[0], 'text'):
+            content = completion.content[0].text
+        else:
+            content = completion.content
+        
+        # Check if content is already a dictionary
+        if isinstance(content, dict):
+            return content
+        
+        # If it's a string, try to parse it as JSON
+        try:
+            parsed_content = json.loads(content)
+            return parsed_content
+        except json.JSONDecodeError as json_error:
+            print(f"Error parsing JSON: {json_error}")
+            return None
+
     except Exception as e:
         print(f"Error processing post with GPT: {e}")
         return None
@@ -223,16 +248,15 @@ def process_post_with_gpt(post):
 
 def get_school_acceptance_rate_category(school_name, intended_major):
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+        completion = client.messages.create(
+            model="claude-3-5-sonnet-20240620",
+            max_tokens=100,
+            temperature=0,
+            system="You are an AI assistant with extensive knowledge of university acceptance rates. Your task is to categorize universities based on their most recent publicly available overall acceptance rate. Respond ONLY with the appropriate category number (0, 1, 2, or 3) and nothing else.",
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are an AI assistant with extensive knowledge of university acceptance rates. Your task is to categorize universities based on their most recent publicly available overall acceptance rate. Respond ONLY with the appropriate category number (0, 1, 2, or 3) and nothing else.",
-                },
-                {
                     "role": "user",
-                    "content": f"""
+                    "content": [{"type": "text", "text": f"""
 Categorize {school_name}'s acceptance rate using the following scale:
 0 = <5% (e.g., Harvard, Stanford, MIT)
 1 = 5-15% (e.g., Northwestern, Cornell)
@@ -253,12 +277,22 @@ Historical data on major competitiveness
 
 Return only the integer category (0, 1, 2, or 3) that best represents the difficulty of admission for {intended_major} at {school_name}.
 """
+                }]
                 },
             ],
-            temperature=0.0,
-            seed=42,
         )
-        return int(completion.choices[0].message.content.strip())
+        
+        # Extract text from TextBlock if necessary
+        if isinstance(completion.content, list) and len(completion.content) > 0 and hasattr(completion.content[0], 'text'):
+            content = completion.content[0].text
+        else:
+            content = completion.content
+        
+        # Print the raw content for debugging
+        print(f"Raw school category response: {content}")
+        
+        # Strip whitespace and convert to integer
+        return int(content.strip())
     except Exception as e:
         print(f"Error getting school acceptance rate category: {e}")
         return None
