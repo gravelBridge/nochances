@@ -316,7 +316,7 @@ def calculate_acceptance_probability(ensemble_prediction, school_category):
     adjusted_prediction = ensemble_prediction - school_category
 
     # Define the logistic function parameters
-    k = 1
+    k = 4
     x0 = 0.5
 
     # Calculate the base probability using a modified logistic function
