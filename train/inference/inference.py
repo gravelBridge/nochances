@@ -206,22 +206,19 @@ def process_post_with_gpt(post):
             model="claude-3-5-sonnet-20240620",
             max_tokens=1000,
             temperature=0,    
-            system = prompt,
+            system = prompt + "\n\nAdditional instruction: Before processing the post, first check if it contains at least 10 Extracurricular Activities and at least 5 Awards/Honors. If it does not, return only {\"skip\": true}. Otherwise, proceed with the normal extraction process. No matter what, only return valid JSON, no commentary, nothing else.",
             messages=[
                 {
                     "role": "user",
                     "content": [
                         {
                             "type": "text",
-                            "text": f'Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema. If the post lacks sufficient information to provide an accurate, consistent output, contains clearly false information, or is a joke, output only {{"skip": true}}. If some information is not explicitly stated, make your best reasonable inference based on context. However, if too much critical information is missing, output only {{"skip": true}}. Do not include any dialogue or explanations, only output valid JSON. You must output valid JSON in this format: {json_string}\nHere is the Reddit Post to analyze:\n{post}',
+                            "text": f'Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema: {json_string}. CRTICIAL: Remember to first check for at least 10 ECs and 5 Awards in the text before proceeding. Here is the Reddit Post to analyze:\n{post}',
                         }
                     ]
                 },
             ],
         )
-        
-        # Print the raw content for debugging
-        print("Raw GPT response:", completion.content)
         
         # Extract text from TextBlock if necessary
         if isinstance(completion.content, list) and len(completion.content) > 0 and hasattr(completion.content[0], 'text'):
@@ -348,11 +345,9 @@ def get_color_for_probability(probability):
         return "#6CB054"  # Green
     else:
         return "#4E9AC1"  # Blue
-    
-def predict_acceptance(post, school_name, major):
-    # Process the post with GPT
-    gpt_output = process_post_with_gpt(post)
 
+def predict_acceptance(gpt_output, school_name, major):
+    # Process the post with GPT
     if gpt_output is None or "skip" in gpt_output:
         return "Unable to process the post or insufficient information provided."
 

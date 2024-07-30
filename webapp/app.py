@@ -9,7 +9,7 @@ import sys
 from forms import PredictionForm
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from train.inference.inference import predict_acceptance
+from train.inference.inference import predict_acceptance, process_post_with_gpt
 import requests
 
 load_dotenv()
@@ -58,7 +58,17 @@ def index():
         school = form.school.data
         major = form.major.data
         try:
-            prediction = predict_acceptance(post, school, major)
+            # Process the post with GPT
+            gpt_output = process_post_with_gpt(post)
+            if gpt_output.get("skip", False):
+                error_message = "Please ensure you have filled out all 10 Extracurricular Activities and all 5 Awards/Honors."
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return jsonify({'error': error_message}), 400
+                flash(error_message, 'error')
+                return render_template('index.html', form=form)
+            
+            # If we pass the check, proceed with the prediction
+            prediction = predict_acceptance(gpt_output, school, major)
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return app.response_class(
                     response=json.dumps(prediction, default=custom_json_encoder),
@@ -80,4 +90,4 @@ if __name__ == '__main__':
     if os.environ.get("production")=="true":
         app.run(host='0.0.0.0')
     else:
-        app.run(debug=True)
+        app.run(debug=True, port=5001)
