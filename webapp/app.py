@@ -112,7 +112,7 @@ def kofi_webhook():
 def get_updates():
     data = load_data()
     return jsonify({
-        'donations': data['donations'],
+        'donations': data['donations'],  # Send all donations
         'requests_left': get_estimated_requests_left()
     })
 

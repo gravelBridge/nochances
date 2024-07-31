@@ -51,15 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 updateRequestCount(data.requests_left);
-                data.donations.forEach(donation => {
-                    if (donation.timestamp > lastCheckTimestamp) {
-                        donationQueue.push(donation);
-                    }
+                const newDonations = data.donations.filter(donation => donation.timestamp > lastCheckTimestamp);
+                newDonations.forEach(donation => {
+                    donationQueue.push(donation);
                 });
-                lastCheckTimestamp = Math.floor(Date.now() / 1000);
                 if (donationQueue.length > 0 && !document.getElementById('donationNotification').style.display) {
                     showDonationNotification(donationQueue.shift());
                 }
+                lastCheckTimestamp = Math.floor(Date.now() / 1000);
             });
     }
 
