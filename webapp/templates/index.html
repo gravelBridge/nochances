@@ -52,14 +52,16 @@
 
         <div class="mb-3">
           {{ form.info.label(class="form-label") }}
-          <span class="ms-2">
-            <i
-              class="fas fa-info-circle"
+          <div class="text-center mb-3">
+            <button
+              type="button"
+              class="btn btn-primary"
               data-bs-toggle="modal"
               data-bs-target="#exampleApplicationModal"
-              title="Example Application"
-            ></i>
-          </span>
+            >
+              View Example
+            </button>
+          </div>
           {{ form.info(class="form-control", rows=20) }}
         </div>
 
