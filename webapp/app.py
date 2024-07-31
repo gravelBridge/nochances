@@ -35,6 +35,8 @@ def load_data():
     if os.path.exists(STORAGE_FILE):
         with open(STORAGE_FILE, 'r') as f:
             return json.load(f)
+    else:
+        print("Could not find donation file")
     return {'donations': [], 'request_count': 0}
 
 def save_data(data):
