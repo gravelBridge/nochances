@@ -137,7 +137,7 @@ def main():
 
     # Hyperparameter tuning
     study = optuna.create_study(direction="minimize")
-    study.optimize(lambda trial: objective(trial, X_train, y_train), n_trials=200)
+    study.optimize(lambda trial: objective(trial, X_train, y_train), n_trials=100)
 
     best_params = study.best_params
     best_model_type = best_params.pop("model_type")

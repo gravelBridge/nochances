@@ -368,6 +368,9 @@ def predict_acceptance(gpt_output, school_name, major):
     xgb_prediction = xgb_model.predict(X_preprocessed)[0]
     nn_prediction = nn_model.predict(X_preprocessed).flatten()[0]
 
+    # Ensemble prediction (average of XGBoost and Neural Network)
+    ensemble_prediction = (xgb_prediction + nn_prediction) / 2
+
     # Get the school's acceptance rate category
     school_category = get_school_acceptance_rate_category(school_name, major)
 
@@ -380,7 +383,7 @@ def predict_acceptance(gpt_output, school_name, major):
     result = {
         "school_category": int(school_category),
         "acceptance_probability": float(probability),
-        "xgb_prediction": float(xgb_prediction),
+        "ensemble_prediction": float(ensemble_prediction),
         "color": get_color_for_probability(probability)
     }
 

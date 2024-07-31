@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="result-label">School Category:</span> ${data.school_category}
             </div>
             <div class="result-item">
-                <span class="result-label">Ensemble Prediction:</span> ${data.xgb_prediction.toFixed(2)}
+                <span class="result-label">Ensemble Prediction:</span> ${data.ensemble_prediction.toFixed(2)}
             </div>
         `;
         resultsModalBody.classList.add('results');
