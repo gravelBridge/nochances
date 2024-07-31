@@ -1,3 +1,5 @@
+import json
+import os
 from flask import Flask, render_template, flash, redirect, url_for, request, jsonify
 from flask.json import jsonify
 import json
@@ -7,10 +9,11 @@ from dotenv import load_dotenv
 import os
 import sys
 from forms import PredictionForm
+import requests
+import time
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from train.inference.inference import predict_acceptance, process_post_with_gpt
-import requests
 
 load_dotenv()
 
@@ -19,6 +22,65 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config['HCAPTCHA_SITE_KEY'] = os.getenv('HCAPTCHA_SITE_KEY')
 app.config['HCAPTCHA_SECRET_KEY'] = os.getenv('HCAPTCHA_SECRET_KEY')
 csrf = CSRFProtect(app)
+
+# Constants for API usage calculation
+INITIAL_BALANCE = 95  # Initial balance in dollars
+TOKENS_PER_REQUEST = 5600 + 360  # Input + Output tokens
+COST_PER_MILLION_TOKENS = (3 * 5600 + 15 * 360) / 1000000  # Cost per request in dollars
+
+# File to store donations and request count
+STORAGE_FILE = 'donation_data.json'
+
+def load_data():
+    if os.path.exists(STORAGE_FILE):
+        with open(STORAGE_FILE, 'r') as f:
+            return json.load(f)
+    return {'donations': [], 'request_count': 0}
+
+def save_data(data):
+    with open(STORAGE_FILE, 'w') as f:
+        json.dump(data, f)
+
+def update_request_count():
+    data = load_data()
+    data['request_count'] += 1
+    save_data(data)
+    return data['request_count']
+
+def get_estimated_requests_left():
+    data = load_data()
+    used_amount = data['request_count'] * COST_PER_MILLION_TOKENS * (TOKENS_PER_REQUEST / 1000000)
+    remaining_amount = INITIAL_BALANCE - used_amount
+    return max(0, int(remaining_amount / (COST_PER_MILLION_TOKENS * (TOKENS_PER_REQUEST / 1000000))))
+
+@app.route('/webhook', methods=['POST'])
+@csrf.exempt
+def kofi_webhook():
+    data = request.form.get('data')
+    if data:
+        try:
+            donation_data = json.loads(data)
+            if donation_data['type'] in ['Donation', 'Subscription']:
+                stored_data = load_data()
+                stored_data['donations'].append({
+                    'name': donation_data['from_name'],
+                    'amount': donation_data['amount'],
+                    'message': donation_data['message'],
+                    'timestamp': int(time.time())
+                })
+                save_data(stored_data)
+                return '', 200
+        except json.JSONDecodeError:
+            pass
+    return '', 400
+
+@app.route('/get_updates')
+def get_updates():
+    data = load_data()
+    return jsonify({
+        'donations': data['donations'],
+        'requests_left': get_estimated_requests_left()
+    })
 
 def custom_json_encoder(obj):
     if isinstance(obj, np.integer):
@@ -52,6 +114,7 @@ def index():
             flash('Please complete the hCaptcha challenge.', 'error')
             return render_template('index.html', form=form)
 
+        update_request_count() # Update the request count when processing a form
         # Construct the post string from form data
         post = f"{form.info.data}\nWant to go to {form.school.data}, applying to the {form.app_round.data} round, majoring in {form.major.data}\n\n"
         
