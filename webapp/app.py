@@ -58,8 +58,8 @@ def get_estimated_requests_left():
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt
 def kofi_webhook():
+    print("Received donation webhook:", request)
     data = request.form.get('data')
-    print("Received donation webhook:", str(data))
     if data:
         try:
             donation_data = json.loads(data)
