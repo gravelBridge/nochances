@@ -1,1 +1,5 @@
-{"donations": [], "request_count": 0}
+{
+  "donations": [],
+  "request_count": 0,
+  "balance": 0
+}

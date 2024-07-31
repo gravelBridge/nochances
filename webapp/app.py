@@ -42,7 +42,6 @@ app.config['HCAPTCHA_SECRET_KEY'] = os.getenv('HCAPTCHA_SECRET_KEY')
 csrf = CSRFProtect(app)
 
 # Constants for API usage calculation
-INITIAL_BALANCE = 95  # Initial balance in dollars
 INPUT_TOKENS_PER_REQUEST = 5600
 OUTPUT_TOKENS_PER_REQUEST = 360
 TOTAL_TOKENS_PER_REQUEST = INPUT_TOKENS_PER_REQUEST + OUTPUT_TOKENS_PER_REQUEST
@@ -57,34 +56,59 @@ def load_data():
         with open(STORAGE_FILE, 'r') as f:
             return json.load(f)
     else:
-        app.logger.info("Could not find donation file")
-    return {'donations': [], 'request_count': 0}
+        app.logger.info("Could not find donation file, creating new one")
+        initial_data = {'donations': [], 'request_count': 0, 'balance': 0}
+        save_data(initial_data)
+        return initial_data
 
 def save_data(data):
     with open(STORAGE_FILE, 'w') as f:
         json.dump(data, f)
 
+def update_balance(amount):
+    if amount <= 0:
+        app.logger.warning(f"Attempted to update balance with non-positive amount: {amount}")
+        return None
+    
+    data = load_data()
+    previous_balance = data['balance']
+    data['balance'] += amount
+    save_data(data)
+    
+    app.logger.info(f"Balance updated: {previous_balance} -> {data['balance']} (change: {amount})")
+    return data['balance']
+
 def update_request_count():
     data = load_data()
+    
+    input_cost = (INPUT_TOKENS_PER_REQUEST / 1000000) * COST_PER_MILLION_INPUT_TOKENS
+    output_cost = (OUTPUT_TOKENS_PER_REQUEST / 1000000) * COST_PER_MILLION_OUTPUT_TOKENS
+    request_cost = input_cost + output_cost
+    
+    if data['balance'] < request_cost:
+        app.logger.warning(f"Insufficient balance for request. Current balance: {data['balance']}, Required: {request_cost}")
+        return None
+    
     data['request_count'] += 1
+    previous_balance = data['balance']
+    data['balance'] -= request_cost
     save_data(data)
+    
+    app.logger.info(f"Request processed. Count: {data['request_count']}, Balance: {previous_balance} -> {data['balance']}")
     return data['request_count']
 
 def get_estimated_requests_left():
     data = load_data()
-    requests_made = data['request_count']
+    current_balance = data['balance']
     
     input_cost = (INPUT_TOKENS_PER_REQUEST / 1000000) * COST_PER_MILLION_INPUT_TOKENS
     output_cost = (OUTPUT_TOKENS_PER_REQUEST / 1000000) * COST_PER_MILLION_OUTPUT_TOKENS
     cost_per_request = input_cost + output_cost
     
-    total_cost = requests_made * cost_per_request
-    remaining_balance = INITIAL_BALANCE - total_cost
-    
-    if remaining_balance <= 0:
+    if current_balance <= 0:
         return 0
     
-    return int(remaining_balance / cost_per_request)
+    return int(current_balance / cost_per_request)
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt
@@ -96,24 +120,34 @@ def kofi_webhook():
             donation_data = json.loads(data)
             if donation_data['type'] in ['Donation', 'Subscription']:
                 stored_data = load_data()
-                stored_data['donations'].append({
-                    'name': donation_data['from_name'],
-                    'amount': donation_data['amount'],
-                    'message': donation_data['message'],
-                    'timestamp': int(time.time())
-                })
-                save_data(stored_data)
-                return '', 200
+                donation_amount = float(donation_data['amount'])
+                new_balance = update_balance(donation_amount)
+                if new_balance is not None:
+                    stored_data['donations'].append({
+                        'name': donation_data['from_name'],
+                        'amount': donation_amount,
+                        'message': donation_data['message'],
+                        'timestamp': int(time.time())
+                    })
+                    save_data(stored_data)
+                    app.logger.info(f"Donation processed: {donation_amount} from {donation_data['from_name']}")
+                    return '', 200
+                else:
+                    app.logger.warning(f"Failed to process donation: {donation_amount} from {donation_data['from_name']}")
+                    return '', 400
         except json.JSONDecodeError:
-            pass
+            app.logger.error("Failed to decode JSON in webhook data")
+        except Exception as e:
+            app.logger.error(f"Error processing webhook: {str(e)}")
     return '', 400
 
 @app.route('/get_updates')
 def get_updates():
     data = load_data()
     return jsonify({
-        'donations': data['donations'],  # Send all donations
-        'requests_left': get_estimated_requests_left()
+        'donations': data['donations'],
+        'requests_left': get_estimated_requests_left(),
+        'balance': data['balance']
     })
 
 def custom_json_encoder(obj):
@@ -148,7 +182,13 @@ def index():
             flash('Please complete the hCaptcha challenge.', 'error')
             return render_template('index.html', form=form)
 
-        update_request_count() # Update the request count when processing a form
+        if update_request_count() is None:
+            error_message = "Insufficient balance to process request. Please try again later."
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'error': error_message}), 400
+            flash(error_message, 'error')
+            return render_template('index.html', form=form)
+
         # Construct the post string from form data
         post = f"{form.info.data}\nWant to go to {form.school.data}, applying to the {form.app_round.data} round, majoring in {form.major.data}\n\n"
         
