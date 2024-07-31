@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateRequestCount(count) {
         requestsLeft = count;
         const display = document.getElementById('requestCountDisplay');
-        display.textContent = `${requestsLeft} requests left`;
+        display.textContent = `${requestsLeft} requests left before we are out of money`;
         
         if (requestsLeft > 1000) {
             display.style.color = '#28a745';

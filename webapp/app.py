@@ -41,6 +41,8 @@ app.config['HCAPTCHA_SITE_KEY'] = os.getenv('HCAPTCHA_SITE_KEY')
 app.config['HCAPTCHA_SECRET_KEY'] = os.getenv('HCAPTCHA_SECRET_KEY')
 csrf = CSRFProtect(app)
 
+KOFI_VERIFICATION_TOKEN = os.getenv('KOFI_VERIFICATION_TOKEN')
+
 # Constants for API usage calculation
 INPUT_TOKENS_PER_REQUEST = 5600
 OUTPUT_TOKENS_PER_REQUEST = 360
@@ -118,6 +120,12 @@ def kofi_webhook():
     if data:
         try:
             donation_data = json.loads(data)
+            
+            # Check the verification token
+            if donation_data.get('verification_token') != KOFI_VERIFICATION_TOKEN:
+                app.logger.warning("Invalid verification token received")
+                return 'Invalid verification token', 401
+
             if donation_data['type'] in ['Donation', 'Subscription']:
                 stored_data = load_data()
                 donation_amount = float(donation_data['amount'])
@@ -183,7 +191,7 @@ def index():
             return render_template('index.html', form=form)
 
         if update_request_count() is None:
-            error_message = "Insufficient balance to process request. Please try again later."
+            error_message = "Insufficient balance to process request. Please try again later or consider donating <3"
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return jsonify({'error': error_message}), 400
             flash(error_message, 'error')
