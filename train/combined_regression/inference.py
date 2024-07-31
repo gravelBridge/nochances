@@ -1,20 +1,17 @@
 from combined_delayed_regressor import TokenNumericCollegeResultsDataset, CombinedDelayedRegressor
-import torch
-
 from openai import OpenAI
+import difflib
+import torch
 import json
-from dotenv import load_dotenv
-import numpy as np
+import dotenv
 import pandas as pd
 import sys
 import os
-import difflib
 
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from preprocessing import load_data, preprocess_data
 
-load_dotenv()
+dotenv.load_dotenv()
 client = OpenAI()
 
 with open("categorization/prompt.txt", "r") as f:
@@ -239,7 +236,7 @@ def vectorize(post, prompt, as_json=False):
 
 colleges_list = open('categorization/all-colleges.txt').readlines()
 colleges_list = [college[:college.index(' (')] for college in colleges_list]
-weights = torch.load('train/combined_regression/reduced_v3_better_stats.pt')
+weights = torch.load('train/combined_regression/reduced_v4_fake_data.pt')
 model = CombinedDelayedRegressor()
 model.load_state_dict(weights)
 model.eval()
@@ -282,7 +279,7 @@ def predict_acceptance(post, college, in_state, admit_round):
 
     numerical_data = process_post_with_gpt(post)
     other_data = vectorize(post, prompt2, True)
-    print(numerical_data)
+    print(numerical_data, other_data)
     selected_data = [
         numerical_data['basic_info']['ethnicity'],
         numerical_data['basic_info']['gender'],
@@ -299,14 +296,13 @@ def predict_acceptance(post, college, in_state, admit_round):
         numerical_data['basic_info']['hooks'],
     ] + list(numerical_data['ecs'].values()) + list(numerical_data['awards'].values())
     
-    results = other_data['results']
     data = {
         'major': other_data['major'],
         'residence': other_data['residence'],
         'extracurriculars': other_data['extracurriculars'],
         'awards': other_data['awards'],
         'numerical': selected_data,
-        'results': results
+        'results': []
     }
 
     residence = dataset.vectorize_text(data['residence'], 5)
@@ -339,7 +335,8 @@ def predict_acceptance(post, college, in_state, admit_round):
     
     major_id = map_major(data['major']) or 1
     major_frequency = college_information['combined'][major_id]
-    
+
+    post['numeric'][4] = post['numeric'][4] ** (1/2)
     numerical_inputs = residence + data['numerical'] + [int(in_state), 
                                                         int(college_information['Control of institution'] == 'Public'),
                                                         float(college_information['Applicants total']/college_information['Admissions total']),
@@ -356,9 +353,9 @@ def predict_acceptance(post, college, in_state, admit_round):
     for i, batch in enumerate(dataloader):
         outputs = model(batch)
     
-    print(torch.sigmoid(outputs))
+    print(outputs, torch.sigmoid(outputs))
     return torch.sigmoid(outputs)
 
 if __name__ == "__main__":
-    post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r', ).readlines())
+    post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
     predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)

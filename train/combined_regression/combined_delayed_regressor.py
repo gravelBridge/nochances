@@ -64,8 +64,8 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                 
                 major_id = map_major(post['major']) or 1
                 major_frequency = college_information['combined'][major_id]
-                print(major_frequency)
-                
+
+                post['numeric'][4] = post['numeric'][4] ** (1/2)
                 numerical_inputs = residence + post['numeric'] + [int(college['in_state']), 
                                                                   int(college_information['Control of institution'] == 'Public'),
                                                                   float(college_information['Applicants total']/college_information['Admissions total']),
