@@ -50,7 +50,7 @@ COST_PER_MILLION_INPUT_TOKENS = 3  # $3 per million input tokens
 COST_PER_MILLION_OUTPUT_TOKENS = 15  # $15 per million output tokens
 
 # File to store donations and request count
-STORAGE_FILE = '/home/ubuntu/nochances/webapp/donation_data.json'
+STORAGE_FILE = 'donation_data.json'
 
 def load_data():
     if os.path.exists(STORAGE_FILE):
