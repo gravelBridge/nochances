@@ -7,40 +7,61 @@ document.addEventListener('DOMContentLoaded', function() {
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     })
+
     const form = document.getElementById('predictionForm');
     const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
     const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'));
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        loadingModal.show();
+    let donationQueue = [];
+    let requestsLeft = 0;
+    let lastCheckTimestamp = Math.floor(Date.now() / 1000);
 
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+    function updateRequestCount(count) {
+        requestsLeft = count;
+        const display = document.getElementById('requestCountDisplay');
+        display.textContent = `${requestsLeft} requests left`;
+        
+        if (requestsLeft > 1000) {
+            display.style.color = '#28a745';
+            display.textContent += ' 😄';
+        } else if (requestsLeft > 500) {
+            display.style.color = '#ffc107';
+            display.textContent += ' 😐';
+        } else {
+            display.style.color = '#dc3545';
+            display.textContent += ' 😟';
+        }
+    }
+
+    function showDonationNotification(donation) {
+        const notification = document.getElementById('donationNotification');
+        notification.textContent = `${donation.name} donated $${donation.amount}: ${donation.message}`;
+        notification.style.display = 'block';
+        
+        setTimeout(() => {
+            notification.style.display = 'none';
+            if (donationQueue.length > 0) {
+                showDonationNotification(donationQueue.shift());
             }
-        })
-        .then(response => response.json().then(data => ({status: response.status, body: data})))
-        .then(({status, body}) => {
-            loadingModal.hide();
-            if (status === 200) {
-                displayResults(body);
-                resultsModal.show();
-            } else {
-                displayErrors(body);
-            }
-        })
-        .catch(error => {
-            loadingModal.hide();
-            alert('An error occurred. Please try again.');
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            resetHCaptcha(); // Reset hCaptcha after form submission
-        });
-    });
+        }, 10000);
+    }
+
+    function checkForUpdates() {
+        fetch('/get_updates')
+            .then(response => response.json())
+            .then(data => {
+                updateRequestCount(data.requests_left);
+                data.donations.forEach(donation => {
+                    if (donation.timestamp > lastCheckTimestamp) {
+                        donationQueue.push(donation);
+                    }
+                });
+                lastCheckTimestamp = Math.floor(Date.now() / 1000);
+                if (donationQueue.length > 0 && !document.getElementById('donationNotification').style.display) {
+                    showDonationNotification(donationQueue.shift());
+                }
+            });
+    }
 
     function displayResults(data) {
         const resultsModalBody = document.getElementById('resultsModalBody');
@@ -75,96 +96,45 @@ document.addEventListener('DOMContentLoaded', function() {
             hcaptcha.reset();
         }
     }
-});
 
-let donationQueue = [];
-let requestsLeft = 0;
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        loadingModal.show();
 
-function updateRequestCount(count) {
-    requestsLeft = count;
-    const display = document.getElementById('requestCountDisplay');
-    display.textContent = `${requestsLeft} requests left`;
-    
-    if (requestsLeft > 1000) {
-        display.style.color = '#28a745';
-        display.textContent += ' 😄';
-    } else if (requestsLeft > 500) {
-        display.style.color = '#ffc107';
-        display.textContent += ' 😐';
-    } else {
-        display.style.color = '#dc3545';
-        display.textContent += ' 😟';
-    }
-}
+        // Decrement the request count immediately for responsive UI
+        updateRequestCount(requestsLeft - 1);
 
-function showDonationNotification(donation) {
-    const notification = document.getElementById('donationNotification');
-    notification.textContent = `${donation.name} donated $${donation.amount}: ${donation.message}`;
-    notification.style.display = 'block';
-    
-    setTimeout(() => {
-        notification.style.display = 'none';
-        if (donationQueue.length > 0) {
-            showDonationNotification(donationQueue.shift());
-        }
-    }, 10000);
-}
-
-function checkForUpdates() {
-    fetch('/get_updates')
-        .then(response => response.json())
-        .then(data => {
-            updateRequestCount(data.requests_left);
-            data.donations.forEach(donation => {
-                if (donation.timestamp > lastCheckTimestamp) {
-                    donationQueue.push(donation);
-                }
-            });
-            lastCheckTimestamp = Math.floor(Date.now() / 1000);
-            if (donationQueue.length > 0 && !document.getElementById('donationNotification').style.display) {
-                showDonationNotification(donationQueue.shift());
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
             }
+        })
+        .then(response => response.json().then(data => ({status: response.status, body: data})))
+        .then(({status, body}) => {
+            loadingModal.hide();
+            if (status === 200) {
+                displayResults(body);
+                resultsModal.show();
+            } else {
+                displayErrors(body);
+            }
+        })
+        .catch(error => {
+            loadingModal.hide();
+            alert('An error occurred. Please try again.');
+            console.error('Error:', error);
+        })
+        .finally(() => {
+            resetHCaptcha();
+            checkForUpdates(); // Update the request count after submission
         });
-}
-
-let lastCheckTimestamp = Math.floor(Date.now() / 1000);
-setInterval(checkForUpdates, 60000); // Check every minute
-
-// Update the existing form submission code
-form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    loadingModal.show();
-
-    // Decrement the request count immediately for responsive UI
-    updateRequestCount(requestsLeft - 1);
-
-    fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json().then(data => ({status: response.status, body: data})))
-    .then(({status, body}) => {
-        loadingModal.hide();
-        if (status === 200) {
-            displayResults(body);
-            resultsModal.show();
-        } else {
-            displayErrors(body);
-        }
-    })
-    .catch(error => {
-        loadingModal.hide();
-        alert('An error occurred. Please try again.');
-        console.error('Error:', error);
-    })
-    .finally(() => {
-        resetHCaptcha();
-        checkForUpdates(); // Update the request count after submission
     });
-});
 
-// Initial update check
-checkForUpdates();
+    // Initial update check
+    checkForUpdates();
+
+    // Set up periodic checks
+    setInterval(checkForUpdates, 60000); // Check every minute
+});
