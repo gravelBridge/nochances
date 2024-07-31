@@ -1,4 +1,8 @@
 from combined_delayed_regressor import TokenNumericCollegeResultsDataset, CombinedDelayedRegressor
+import matplotlib
+from matplotlib import pyplot as plt
+import numpy as np
+import captum
 from openai import OpenAI
 import difflib
 import torch
@@ -271,6 +275,23 @@ def map_major(major):
         for item in value:
             if item in " " + major.lower():
                 return key
+            
+def attribute_features(input, output):
+    integrated_gradients = captum.attr.IntegratedGradients(model)
+    attributions_ig = integrated_gradients.attribute(input, target=output, n_steps=200)
+
+    default_cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom blue',
+                                                                       [(0, '#ffffff'),
+                                                                        (0.25, '#0000ff'),
+                                                                        (1, '#0000ff')], N=256)
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    captum.attr.visualization.visualize_image_attr(np.transpose(attributions_ig.squeeze().cpu().detach().numpy(), (1,2,0)),
+                                                   np.transpose(output.squeeze().cpu().detach().numpy(), (1,2,0)), 
+                                                   method='heat_map', cmap=default_cmap, show_colorbar=True, 
+                                                   sign='positive', title='Integrated Gradients', plt_fig_axis=(fig, ax))
+    fig.savefig('integrated_gradients_visualization.png', dpi=300, bbox_inches='tight')
+    plt.close(fig)
 
 def predict_acceptance(post, college, in_state, admit_round):
     prompt2 = open('categorization/prompt_2.txt', 'r')
@@ -336,7 +357,7 @@ def predict_acceptance(post, college, in_state, admit_round):
     major_id = map_major(data['major']) or 1
     major_frequency = college_information['combined'][major_id]
 
-    post['numeric'][4] = post['numeric'][4] ** (1/2)
+    data['numerical'][4] = data['numerical'][4] ** (1/2)
     numerical_inputs = residence + data['numerical'] + [int(in_state), 
                                                         int(college_information['Control of institution'] == 'Public'),
                                                         float(college_information['Applicants total']/college_information['Admissions total']),
@@ -354,8 +375,9 @@ def predict_acceptance(post, college, in_state, admit_round):
         outputs = model(batch)
     
     print(outputs, torch.sigmoid(outputs))
-    return torch.sigmoid(outputs)
+    return dataloader, torch.sigmoid(outputs)
 
 if __name__ == "__main__":
     post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
-    predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
+    data, prediction = predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
+    attribute_features(data, prediction)
