@@ -11,6 +11,24 @@ import sys
 from forms import PredictionForm
 import requests
 import time
+import logging
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+    }
+})
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from train.inference.inference import predict_acceptance, process_post_with_gpt
@@ -36,7 +54,7 @@ def load_data():
         with open(STORAGE_FILE, 'r') as f:
             return json.load(f)
     else:
-        print("Could not find donation file")
+        app.logger.info("Could not find donation file")
     return {'donations': [], 'request_count': 0}
 
 def save_data(data):
@@ -58,7 +76,7 @@ def get_estimated_requests_left():
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt
 def kofi_webhook():
-    print("Received donation webhook:", request)
+    app.logger.info("Received donation webhook:", request)
     data = request.form.get('data')
     if data:
         try:
