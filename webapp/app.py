@@ -43,8 +43,11 @@ csrf = CSRFProtect(app)
 
 # Constants for API usage calculation
 INITIAL_BALANCE = 95  # Initial balance in dollars
-TOKENS_PER_REQUEST = 5600 + 360  # Input + Output tokens
-COST_PER_MILLION_TOKENS = (3 * 5600 + 15 * 360) / 1000000  # Cost per request in dollars
+INPUT_TOKENS_PER_REQUEST = 5600
+OUTPUT_TOKENS_PER_REQUEST = 360
+TOTAL_TOKENS_PER_REQUEST = INPUT_TOKENS_PER_REQUEST + OUTPUT_TOKENS_PER_REQUEST
+COST_PER_MILLION_INPUT_TOKENS = 3  # $3 per million input tokens
+COST_PER_MILLION_OUTPUT_TOKENS = 15  # $15 per million output tokens
 
 # File to store donations and request count
 STORAGE_FILE = '/home/ubuntu/nochances/webapp/donation_data.json'
@@ -69,9 +72,19 @@ def update_request_count():
 
 def get_estimated_requests_left():
     data = load_data()
-    used_amount = data['request_count'] * COST_PER_MILLION_TOKENS * (TOKENS_PER_REQUEST / 1000000)
-    remaining_amount = INITIAL_BALANCE - used_amount
-    return max(0, int(remaining_amount / (COST_PER_MILLION_TOKENS * (TOKENS_PER_REQUEST / 1000000))))
+    requests_made = data['request_count']
+    
+    input_cost = (INPUT_TOKENS_PER_REQUEST / 1000000) * COST_PER_MILLION_INPUT_TOKENS
+    output_cost = (OUTPUT_TOKENS_PER_REQUEST / 1000000) * COST_PER_MILLION_OUTPUT_TOKENS
+    cost_per_request = input_cost + output_cost
+    
+    total_cost = requests_made * cost_per_request
+    remaining_balance = INITIAL_BALANCE - total_cost
+    
+    if remaining_balance <= 0:
+        return 0
+    
+    return int(remaining_balance / cost_per_request)
 
 @app.route('/webhook', methods=['POST'])
 @csrf.exempt
