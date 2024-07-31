@@ -154,6 +154,7 @@ def index():
 
 if __name__ == '__main__':
     if os.environ.get("production")=="true":
+        print("Webapp running")
         app.run(host='0.0.0.0')
     else:
         app.run(debug=True, port=5001)
