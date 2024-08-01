@@ -33,8 +33,6 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
 
         for post_id, post in data.items():
             for college in post['results']:
-                residence = self.vectorize_text(post['residence'], 5)
-                
                 ecs = []
                 for ec in post['ecs'][0:10]:
                     ecs += self.vectorize_text(ec, 15)
@@ -66,12 +64,12 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                 major_frequency = college_information['combined'][major_id]
 
                 post['numeric'][4] = post['numeric'][4] ** (1/3)
-                numerical_inputs = residence + post['numeric'] + [int(college['in_state']), 
-                                                                  float(college_information['Applicants total']/college_information['Admissions total']),
-                                                                  float(college_information['SAT Critical Reading 75th percentile score']),
-                                                                  float(college_information['SAT Math 75th percentile score']),
-                                                                  int(college['round']),
-                                                                  major_frequency] + college_information['combined'] + activities_inputs
+                numerical_inputs = post['numeric'] + [int(college['in_state']), 
+                                                      float(college_information['Applicants total']/college_information['Admissions total']),
+                                                      float(college_information['SAT Critical Reading 75th percentile score']),
+                                                      float(college_information['SAT Math 75th percentile score']),
+                                                      int(college['round']),
+                                                      major_frequency] + college_information['combined'] + activities_inputs
                 
                 self.data.append({
                     'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),
@@ -88,7 +86,7 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
 class CombinedDelayedRegressor(torch.nn.Module):
     def __init__(self):
         super(CombinedDelayedRegressor, self).__init__()
-        self.fc1 = torch.nn.Linear(250, 1024)
+        self.fc1 = torch.nn.Linear(245, 1024)
         self.fc2 = torch.nn.Linear(1024, 512)
         self.fc3 = torch.nn.Linear(512, 256)
         self.fc4 = torch.nn.Linear(256, 128)
@@ -97,7 +95,7 @@ class CombinedDelayedRegressor(torch.nn.Module):
         self.fc7 = torch.nn.Linear(32, 16)
         self.fc8 = torch.nn.Linear(16, 1)
 
-        self.batchnorm = torch.nn.BatchNorm1d(250)
+        self.batchnorm = torch.nn.BatchNorm1d(245)
 
         self.dropout = torch.nn.Dropout(0.5)
         self.activation = torch.nn.GELU()

@@ -1,7 +1,4 @@
 from numerical_regressor import TokenNumericCollegeResultsDataset, CombinedDelayedRegressor
-import matplotlib
-from matplotlib import pyplot as plt
-import numpy as np
 import captum
 from openai import OpenAI
 import difflib
@@ -282,6 +279,30 @@ def attribute_features(input):
 
     return attributions
 
+def general_attribute_features(dataset_path):
+    dataset = torch.load(dataset_path)
+
+    full_data_size = len(dataset)
+    train_size = int(full_data_size * 0.8)
+    print(f"Train Data Size: {train_size}")
+
+    gen = torch.Generator()
+    gen.manual_seed(0)
+
+    train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, full_data_size - train_size], generator=gen)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=32, num_workers=2)
+    for _, batch in enumerate(test_loader):
+        inputs = batch['inputs']
+        continue
+    
+    attributes = attribute_features(inputs)
+    flattened_attributes = [0 for _ in range(len(attributes[0]))]
+    for row in attributes:
+        for i in range(len(row)):
+            flattened_attributes[i] += float(row[i])
+    
+    return(flattened_attributes)
+
 def predict_acceptance(post, college, in_state, admit_round):
     prompt2 = open('categorization/prompt_2.txt', 'r')
     prompt2 = prompt2.readlines()
@@ -309,8 +330,6 @@ def predict_acceptance(post, college, in_state, admit_round):
         'numerical': selected_data,
         'results': []
     }
-
-    residence = dataset.vectorize_text(data['residence'], 5)
                 
     ecs = []
     for ec in data['extracurriculars'][0:10]:
@@ -341,12 +360,12 @@ def predict_acceptance(post, college, in_state, admit_round):
     major_id = map_major(data['major']) or 1
     major_frequency = college_information['combined'][major_id]
 
-    numerical_inputs = residence + data['numerical'] + [in_state, 
-                                                        float(college_information['Applicants total']/college_information['Admissions total']),
-                                                        float(college_information['SAT Critical Reading 75th percentile score']),
-                                                        float(college_information['SAT Math 75th percentile score']),
-                                                        admit_round,
-                                                        major_frequency] + college_information['combined'] + activities_inputs
+    numerical_inputs = data['numerical'] + [in_state, 
+                                            float(college_information['Applicants total']/college_information['Admissions total']),
+                                            float(college_information['SAT Critical Reading 75th percentile score']),
+                                            float(college_information['SAT Math 75th percentile score']),
+                                            admit_round,
+                                            major_frequency] + college_information['combined'] + activities_inputs
                 
     dataloader = torch.utils.data.DataLoader([{
         'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),
@@ -359,5 +378,5 @@ def predict_acceptance(post, college, in_state, admit_round):
     return batch['inputs'], torch.sigmoid(outputs)
 
 if __name__ == "__main__":
-    post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
-    data, prediction = predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
+    # post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
+    # data, prediction = predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
