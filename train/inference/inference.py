@@ -313,7 +313,7 @@ def calculate_acceptance_probability(ensemble_prediction, school_category):
     adjusted_prediction = ensemble_prediction - school_category
 
     # Define the logistic function parameters
-    k = 4
+    k = 1
     x0 = 0.5
 
     # Calculate the base probability using a modified logistic function
@@ -322,11 +322,13 @@ def calculate_acceptance_probability(ensemble_prediction, school_category):
     # Apply additional adjustments
     if adjusted_prediction <= 0:
         # Boost probabilities for predictions at or below the school category
-        boost_factor = 1 + abs(adjusted_prediction) * 0.1
-        probability = base_probability * boost_factor
+        #boost_factor = 1 + abs(adjusted_prediction) * 0.1
+        #probability = base_probability * boost_factor
+        probability = base_probability
+        pass
     else:
         # Reduce probabilities for predictions above the school category
-        reduction_factor = 1 - min(adjusted_prediction * 0.1, 0.5)
+        reduction_factor = 1 - min(adjusted_prediction * 1, 0.5)
         probability = base_probability * reduction_factor
 
     # Ensure the probability stays within [0.01, 0.99] range
@@ -378,7 +380,7 @@ def predict_acceptance(gpt_output, school_name, major):
         return "Unable to determine the school's acceptance rate category."
 
     # Calculate the probability of acceptance
-    probability = calculate_acceptance_probability(xgb_prediction, school_category)
+    probability = calculate_acceptance_probability(ensemble_prediction, school_category)
     # Convert non-serializable types
     result = {
         "school_category": int(school_category),
