@@ -206,14 +206,14 @@ def process_post_with_gpt(post):
             model="claude-3-5-sonnet-20240620",
             max_tokens=1000,
             temperature=0,    
-            system = prompt + "\n\nAdditional instruction: Before processing the post, first check if it contains at least 10 Extracurricular Activities and at least 5 Awards/Honors. If it does not, return only {\"skip\": true}. Otherwise, proceed with the normal extraction process. No matter what, only return valid JSON, no commentary, nothing else.",
+            system = prompt,
             messages=[
                 {
                     "role": "user",
                     "content": [
                         {
                             "type": "text",
-                            "text": f'Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema: {json_string}. CRTICIAL: Remember to first check for at least 10 ECs and 5 Awards in the text before proceeding. Here is the Reddit Post to analyze:\n{post}',
+                            "text": f'Analyze the following Reddit post from r/collegeresults and extract the relevant information according to the specified JSON schema: {json_string}. Here is the Reddit Post to analyze:\n{post}',
                         }
                     ]
                 },
