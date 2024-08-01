@@ -1,4 +1,4 @@
-from combined_delayed_regressor import TokenNumericCollegeResultsDataset, CombinedDelayedRegressor
+from numerical_regressor import TokenNumericCollegeResultsDataset, CombinedDelayedRegressor
 import matplotlib
 from matplotlib import pyplot as plt
 import numpy as np
@@ -240,7 +240,7 @@ def vectorize(post, prompt, as_json=False):
 
 colleges_list = open('categorization/all-colleges.txt').readlines()
 colleges_list = [college[:college.index(' (')] for college in colleges_list]
-weights = torch.load('train/combined_regression/reduced_v4_fake_data.pt')
+weights = torch.load('train/combined_regression/reduced_v5_fake_data_numerical.pt')
 model = CombinedDelayedRegressor()
 model.load_state_dict(weights)
 model.eval()
@@ -276,22 +276,11 @@ def map_major(major):
             if item in " " + major.lower():
                 return key
             
-def attribute_features(input, output):
+def attribute_features(input):
     integrated_gradients = captum.attr.IntegratedGradients(model)
-    attributions_ig = integrated_gradients.attribute(input, target=output, n_steps=200)
+    attributions = integrated_gradients.attribute(input)
 
-    default_cmap = matplotlib.colors.LinearSegmentedColormap.from_list('custom blue',
-                                                                       [(0, '#ffffff'),
-                                                                        (0.25, '#0000ff'),
-                                                                        (1, '#0000ff')], N=256)
-
-    fig, ax = plt.subplots(figsize=(10, 10))
-    captum.attr.visualization.visualize_image_attr(np.transpose(attributions_ig.squeeze().cpu().detach().numpy(), (1,2,0)),
-                                                   np.transpose(output.squeeze().cpu().detach().numpy(), (1,2,0)), 
-                                                   method='heat_map', cmap=default_cmap, show_colorbar=True, 
-                                                   sign='positive', title='Integrated Gradients', plt_fig_axis=(fig, ax))
-    fig.savefig('integrated_gradients_visualization.png', dpi=300, bbox_inches='tight')
-    plt.close(fig)
+    return attributions
 
 def predict_acceptance(post, college, in_state, admit_round):
     prompt2 = open('categorization/prompt_2.txt', 'r')
@@ -300,21 +289,16 @@ def predict_acceptance(post, college, in_state, admit_round):
 
     numerical_data = process_post_with_gpt(post)
     other_data = vectorize(post, prompt2, True)
-    print(numerical_data, other_data)
     selected_data = [
         numerical_data['basic_info']['ethnicity'],
         numerical_data['basic_info']['gender'],
         numerical_data['basic_info']['income_bracket'],
         numerical_data['basic_info']['gpa'],
-        numerical_data['basic_info']['ap_ib_courses'],
+        numerical_data['basic_info']['ap_ib_courses'] ** (1/2),
         numerical_data['basic_info']['ap_ib_scores'],
         numerical_data['basic_info']['test_score'],
         numerical_data['basic_info']['location'],
-        numerical_data['basic_info']['legacy'],
         numerical_data['basic_info']['first_gen'],
-        numerical_data['basic_info']['languages'],
-        numerical_data['basic_info']['special_talents'],
-        numerical_data['basic_info']['hooks'],
     ] + list(numerical_data['ecs'].values()) + list(numerical_data['awards'].values())
     
     data = {
@@ -330,13 +314,13 @@ def predict_acceptance(post, college, in_state, admit_round):
                 
     ecs = []
     for ec in data['extracurriculars'][0:10]:
-        ecs += dataset.vectorize_text(ec, 50)
-    ecs += [0 for _ in range(500 - len(ecs))]
+        ecs += dataset.vectorize_text(ec, 15)
+    ecs += [0 for _ in range(150 - len(ecs))]
 
     awards = []
     for award in data['awards'][0:5]:
-        awards += dataset.vectorize_text(award, 15)
-    awards += [0 for _ in range(75 - len(awards))]
+        awards += dataset.vectorize_text(award, 10)
+    awards += [0 for _ in range(50 - len(awards))]
 
     activities_inputs = ecs + awards
     
@@ -357,27 +341,23 @@ def predict_acceptance(post, college, in_state, admit_round):
     major_id = map_major(data['major']) or 1
     major_frequency = college_information['combined'][major_id]
 
-    data['numerical'][4] = data['numerical'][4] ** (1/2)
-    numerical_inputs = residence + data['numerical'] + [int(in_state), 
-                                                        int(college_information['Control of institution'] == 'Public'),
+    numerical_inputs = residence + data['numerical'] + [in_state, 
                                                         float(college_information['Applicants total']/college_information['Admissions total']),
                                                         float(college_information['SAT Critical Reading 75th percentile score']),
                                                         float(college_information['SAT Math 75th percentile score']),
-                                                        int(admit_round),
-                                                        major_frequency] + college_information['combined']
-    
+                                                        admit_round,
+                                                        major_frequency] + college_information['combined'] + activities_inputs
+                
     dataloader = torch.utils.data.DataLoader([{
-        'activities_inputs': torch.tensor(activities_inputs, dtype=torch.float32).detach(),
-        'numeric_inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500)
+        'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),
     }])
 
-    for i, batch in enumerate(dataloader):
-        outputs = model(batch)
+    for _, batch in enumerate(dataloader):
+        outputs = model(batch['inputs'])
     
     print(outputs, torch.sigmoid(outputs))
-    return dataloader, torch.sigmoid(outputs)
+    return batch['inputs'], torch.sigmoid(outputs)
 
 if __name__ == "__main__":
     post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
     data, prediction = predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
-    attribute_features(data, prediction)

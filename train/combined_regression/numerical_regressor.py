@@ -37,13 +37,13 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                 
                 ecs = []
                 for ec in post['ecs'][0:10]:
-                    ecs += self.vectorize_text(ec, 50)
-                ecs += [0 for _ in range(500 - len(ecs))]
+                    ecs += self.vectorize_text(ec, 15)
+                ecs += [0 for _ in range(150 - len(ecs))]
 
                 awards = []
                 for award in post['awards'][0:5]:
-                    awards += self.vectorize_text(award, 15)
-                awards += [0 for _ in range(75 - len(awards))]
+                    awards += self.vectorize_text(award, 10)
+                awards += [0 for _ in range(50 - len(awards))]
 
                 activities_inputs = ecs + awards
                 
@@ -65,9 +65,8 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                 major_id = map_major(post['major']) or 1
                 major_frequency = college_information['combined'][major_id]
 
-                post['numeric'][4] = post['numeric'][4] ** (1/2)
+                post['numeric'][4] = post['numeric'][4] ** (1/3)
                 numerical_inputs = residence + post['numeric'] + [int(college['in_state']), 
-                                                                  int(college_information['Control of institution'] == 'Public'),
                                                                   float(college_information['Applicants total']/college_information['Admissions total']),
                                                                   float(college_information['SAT Critical Reading 75th percentile score']),
                                                                   float(college_information['SAT Math 75th percentile score']),
@@ -89,7 +88,7 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
 class CombinedDelayedRegressor(torch.nn.Module):
     def __init__(self):
         super(CombinedDelayedRegressor, self).__init__()
-        self.fc1 = torch.nn.Linear(630, 1024)
+        self.fc1 = torch.nn.Linear(250, 1024)
         self.fc2 = torch.nn.Linear(1024, 512)
         self.fc3 = torch.nn.Linear(512, 256)
         self.fc4 = torch.nn.Linear(256, 128)
@@ -98,7 +97,7 @@ class CombinedDelayedRegressor(torch.nn.Module):
         self.fc7 = torch.nn.Linear(32, 16)
         self.fc8 = torch.nn.Linear(16, 1)
 
-        self.batchnorm = torch.nn.BatchNorm1d(630)
+        self.batchnorm = torch.nn.BatchNorm1d(250)
 
         self.dropout = torch.nn.Dropout(0.5)
         self.activation = torch.nn.GELU()
