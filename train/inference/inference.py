@@ -255,11 +255,11 @@ def get_school_acceptance_rate_category(school_name, intended_major):
                     "role": "user",
                     "content": [{"type": "text", "text": f"""
 Categorize {school_name}'s acceptance rate using the following scale:
-0 = <5% (e.g., Harvard, Stanford, MIT)
+0 = <5% (e.g., Harvard, Stanford, MIT, Columbia)
 1 = 5-15% (e.g., Northwestern, Cornell)
 2 = 15-40% (e.g., UC Davis, Boston University)
 3 = >40% (e.g., ASU, Rollins University) or Open Admission
-Use the most recent publicly available overall acceptance rate for initial categorization. Then, adjust the category if the intended major ({intended_major}) is known to be significantly more competitive at {school_name} Only change the result if the change would result in a lower result. So, for instance, UCLA would be 1 or 0, never 2 or 3.
+Use the most recent publicly available overall acceptance rate for initial categorization. Then, adjust the category if the intended major ({intended_major}) is known to be significantly more competitive at {school_name} Only change the result if the change would result in a lower result. So, for instance, UC Berkeley would be 1 or 0, never 2 or 3.
 Examples of major-specific adjustments:
 
 Computer Science at Carnegie Mellon: Category 0
