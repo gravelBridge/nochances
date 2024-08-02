@@ -1,11 +1,12 @@
 from numerical_regressor import TokenNumericCollegeResultsDataset, CombinedDelayedRegressor
 import captum
 from openai import OpenAI
-import difflib
 import torch
-import json
 import dotenv
 import pandas as pd
+import difflib
+import json
+import math
 import sys
 import os
 
@@ -237,7 +238,7 @@ def vectorize(post, prompt, as_json=False):
 
 colleges_list = open('categorization/all-colleges.txt').readlines()
 colleges_list = [college[:college.index(' (')] for college in colleges_list]
-weights = torch.load('train/combined_regression/reduced_v5_fake_data_numerical.pt')
+weights = torch.load('train/combined_regression/fake_data_demographicless.pt')
 model = CombinedDelayedRegressor()
 model.load_state_dict(weights)
 model.eval()
@@ -249,6 +250,7 @@ major_data = major_data[['Name', 'combined', 'Total']]
 def to_frequencies(counts, total):
     return [float(count/total) if total else 0 for count in counts]
 major_data['combined'] = major_data.apply(lambda x: to_frequencies(x['combined'], x['Total']), axis=1)
+major_data['ranked_combined'] = major_data['combined'].map(lambda x: pd.Series(x).rank(method='dense').to_list())
 college_data = pd.merge(major_data, college_data, on="Name")
 dataset = TokenNumericCollegeResultsDataset({}, college_data)
 
@@ -277,7 +279,7 @@ def attribute_features(input):
     integrated_gradients = captum.attr.IntegratedGradients(model)
     attributions = integrated_gradients.attribute(input)
 
-    return attributions
+    return list(attributions)
 
 def general_attribute_features(dataset_path):
     dataset = torch.load(dataset_path)
@@ -290,7 +292,7 @@ def general_attribute_features(dataset_path):
     gen.manual_seed(0)
 
     train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, full_data_size - train_size], generator=gen)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=32, num_workers=2)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=128, num_workers=2)
     for _, batch in enumerate(test_loader):
         inputs = batch['inputs']
         continue
@@ -311,11 +313,9 @@ def predict_acceptance(post, college, in_state, admit_round):
     numerical_data = process_post_with_gpt(post)
     other_data = vectorize(post, prompt2, True)
     selected_data = [
-        numerical_data['basic_info']['ethnicity'],
-        numerical_data['basic_info']['gender'],
         numerical_data['basic_info']['income_bracket'],
         numerical_data['basic_info']['gpa'],
-        numerical_data['basic_info']['ap_ib_courses'] ** (1/2),
+        math.log10(numerical_data['basic_info']['ap_ib_courses'] + 1),
         numerical_data['basic_info']['ap_ib_scores'],
         numerical_data['basic_info']['test_score'],
         numerical_data['basic_info']['location'],
@@ -358,14 +358,14 @@ def predict_acceptance(post, college, in_state, admit_round):
                 print(college, closest_college)
     
     major_id = map_major(data['major']) or 1
-    major_frequency = college_information['combined'][major_id]
 
     numerical_inputs = data['numerical'] + [in_state, 
                                             float(college_information['Applicants total']/college_information['Admissions total']),
                                             float(college_information['SAT Critical Reading 75th percentile score']),
                                             float(college_information['SAT Math 75th percentile score']),
                                             admit_round,
-                                            major_frequency] + college_information['combined'] + activities_inputs
+                                            college_information['combined'][major_id],
+                                            college_information['ranked_combined'][major_id]] + activities_inputs
                 
     dataloader = torch.utils.data.DataLoader([{
         'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),
@@ -378,5 +378,14 @@ def predict_acceptance(post, college, in_state, admit_round):
     return batch['inputs'], torch.sigmoid(outputs)
 
 if __name__ == "__main__":
-    # post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
-    # data, prediction = predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
+    post = '\n'.join(open('train/combined_regression/sample_post.txt', 'r').readlines())
+    data, prediction = predict_acceptance(post, 'Massachussetts Institute of Technology', 0, 1)
+    attributions = attribute_features(data)
+    with open('train/combined_regression/attributions.txt', 'w') as file:
+        for line in attributions[0]:
+            file.write(f"{line}\n")
+
+    # attributions = general_attribute_features('train/combined_regression/fake_data_demographicaless.pt')
+    # with open('train/combined_regression/attributions.txt', 'w') as file:
+    #     for line in attributions:
+    #         file.write(f"{line}\n")

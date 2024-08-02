@@ -61,7 +61,6 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                             continue
                 
                 major_id = map_major(post['major']) or 1
-                major_frequency = college_information['combined'][major_id]
 
                 post['numeric'][4] = post['numeric'][4] ** (1/3)
                 numerical_inputs = post['numeric'] + [int(college['in_state']), 
@@ -69,7 +68,8 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                                                       float(college_information['SAT Critical Reading 75th percentile score']),
                                                       float(college_information['SAT Math 75th percentile score']),
                                                       int(college['round']),
-                                                      major_frequency] + college_information['combined'] + activities_inputs
+                                                      college_information['combined'][major_id],
+                                                      college_information['ranked_combined'][major_id]] + activities_inputs
                 
                 self.data.append({
                     'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),
@@ -86,7 +86,7 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
 class CombinedDelayedRegressor(torch.nn.Module):
     def __init__(self):
         super(CombinedDelayedRegressor, self).__init__()
-        self.fc1 = torch.nn.Linear(245, 1024)
+        self.fc1 = torch.nn.Linear(232, 1024)
         self.fc2 = torch.nn.Linear(1024, 512)
         self.fc3 = torch.nn.Linear(512, 256)
         self.fc4 = torch.nn.Linear(256, 128)
@@ -95,7 +95,7 @@ class CombinedDelayedRegressor(torch.nn.Module):
         self.fc7 = torch.nn.Linear(32, 16)
         self.fc8 = torch.nn.Linear(16, 1)
 
-        self.batchnorm = torch.nn.BatchNorm1d(245)
+        self.batchnorm = torch.nn.BatchNorm1d(232)
 
         self.dropout = torch.nn.Dropout(0.5)
         self.activation = torch.nn.GELU()
