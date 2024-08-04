@@ -22,10 +22,13 @@
       href="{{ url_for('static', filename='css/styles.css') }}"
     />
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
   </head>
   <body>
     <div id="donationNotification" class="donation-notification"></div>
-    <div id="requestCountDisplay" class="request-count-display"></div>
     <div class="container mt-5 mb-5">
       <h1 class="text-center main-title mb-5">AcceptifyAI</h1>
 
@@ -83,43 +86,52 @@
       {% endfor %} {% endif %} {% endwith %}
     </div>
 
-    <div class="bottom-right-buttons">
-      <button
-        type="button"
-        class="btn btn-icon"
-        data-bs-toggle="modal"
-        data-bs-target="#creditModal"
-        title="Credits"
-      >
-        <i class="fas fa-users"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-icon"
-        data-bs-toggle="modal"
-        data-bs-target="#infoModal"
-        title="How it works"
-      >
-        <i class="fas fa-info-circle"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-icon"
-        data-bs-toggle="modal"
-        data-bs-target="#donateModal"
-        title="Donate"
-      >
-        <i class="fas fa-donate"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-icon"
-        data-bs-toggle="modal"
-        data-bs-target="#faqModal"
-        title="FAQ"
-      >
-        <i class="fas fa-question-circle"></i>
-      </button>
+    <div
+      class="bottom-container fixed-bottom w-100 d-flex justify-content-between align-items-center p-3"
+    >
+      <div id="requestCountDisplay" class="request-count-display"></div>
+      <div class="bottom-right-buttons">
+        <button
+          type="button"
+          class="btn btn-icon"
+          data-bs-toggle="modal"
+          data-bs-target="#creditModal"
+          title="Credits"
+          aria-label="View credits"
+        >
+          <i class="fas fa-users"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-icon"
+          data-bs-toggle="modal"
+          data-bs-target="#infoModal"
+          title="How it works"
+          aria-label="Learn how it works"
+        >
+          <i class="fas fa-info-circle"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-icon"
+          data-bs-toggle="modal"
+          data-bs-target="#donateModal"
+          title="Donate"
+          aria-label="Make a donation"
+        >
+          <i class="fas fa-donate"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-icon"
+          data-bs-toggle="modal"
+          data-bs-target="#faqModal"
+          title="FAQ"
+          aria-label="View frequently asked questions"
+        >
+          <i class="fas fa-question-circle"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Loading Modal -->
