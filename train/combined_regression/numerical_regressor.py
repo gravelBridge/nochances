@@ -69,7 +69,7 @@ class TokenNumericCollegeResultsDataset(torch.utils.data.Dataset):
                                                       float(college_information['SAT Math 75th percentile score']),
                                                       int(college['round']),
                                                       college_information['combined'][major_id],
-                                                      college_information['ranked_combined'][major_id]] + activities_inputs
+                                                      major_id] + activities_inputs
                 
                 self.data.append({
                     'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),

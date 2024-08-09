@@ -286,13 +286,12 @@ def general_attribute_features(dataset_path):
 
     full_data_size = len(dataset)
     train_size = int(full_data_size * 0.8)
-    print(f"Train Data Size: {train_size}")
 
     gen = torch.Generator()
     gen.manual_seed(0)
 
     train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, full_data_size - train_size], generator=gen)
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=128, num_workers=2)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=512, num_workers=2)
     for _, batch in enumerate(test_loader):
         inputs = batch['inputs']
         continue
@@ -301,7 +300,7 @@ def general_attribute_features(dataset_path):
     flattened_attributes = [0 for _ in range(len(attributes[0]))]
     for row in attributes:
         for i in range(len(row)):
-            flattened_attributes[i] += float(row[i])
+            flattened_attributes[i] += abs(float(row[i]))
     
     return(flattened_attributes)
 
@@ -317,7 +316,7 @@ def predict_acceptance(post, college, in_state, admit_round):
         numerical_data['basic_info']['gpa'],
         math.log10(numerical_data['basic_info']['ap_ib_courses'] + 1),
         numerical_data['basic_info']['ap_ib_scores'],
-        numerical_data['basic_info']['test_score'],
+        math.log10(numerical_data['basic_info']['test_score'] + 1),
         numerical_data['basic_info']['location'],
         numerical_data['basic_info']['first_gen'],
     ] + list(numerical_data['ecs'].values()) + list(numerical_data['awards'].values())
@@ -365,7 +364,7 @@ def predict_acceptance(post, college, in_state, admit_round):
                                             float(college_information['SAT Math 75th percentile score']),
                                             admit_round,
                                             college_information['combined'][major_id],
-                                            college_information['ranked_combined'][major_id]] + activities_inputs
+                                            major_id] + activities_inputs
                 
     dataloader = torch.utils.data.DataLoader([{
         'inputs': torch.tensor(numerical_inputs, dtype=torch.float32).detach().nan_to_num(500),
@@ -385,7 +384,7 @@ if __name__ == "__main__":
         for line in attributions[0]:
             file.write(f"{line}\n")
 
-    # attributions = general_attribute_features('train/combined_regression/fake_data_demographicaless.pt')
+    # attributions = general_attribute_features('train/combined_regression/shortened_numerical_fake_data_demographicless.pt')
     # with open('train/combined_regression/attributions.txt', 'w') as file:
     #     for line in attributions:
     #         file.write(f"{line}\n")
