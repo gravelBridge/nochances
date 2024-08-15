@@ -18,7 +18,7 @@ from preprocessing import load_data, preprocess_data
 load_dotenv()
 client = anthropic.Anthropic()
 
-with open("categorization/prompt.txt", "r") as f:
+with open("/home/ubuntu/nochances/categorization/prompt.txt", "r") as f:
     prompt = f.read()
 
 JSON_SCHEMAS = {
@@ -359,9 +359,9 @@ def predict_acceptance(gpt_output, school_name, major):
         return "Unable to extract features from the processed data."
     
     # Load the saved models and scalers
-    xgb_model = joblib.load("models/best_model_xgb.joblib")
-    nn_model = tf.keras.models.load_model("models/best_model_nn.keras")
-    scalers = joblib.load("models/scalers.joblib")
+    xgb_model = joblib.load("/home/ubuntu/nochances/models/best_model_xgb.joblib")
+    nn_model = tf.keras.models.load_model("/home/ubuntu/nochances/models/best_model_nn.keras")
+    scalers = joblib.load("/home/ubuntu/nochances/models/scalers.joblib")
 
     # Preprocess the input data
     X_preprocessed = preprocess_data(X, is_training=False, scalers=scalers)
