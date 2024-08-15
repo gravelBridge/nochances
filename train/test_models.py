@@ -2,15 +2,15 @@ import numpy as np
 import joblib
 import tensorflow as tf
 from sklearn.metrics import (mean_squared_error, mean_absolute_error, accuracy_score,
-                             precision_score, recall_score, roc_auc_score)
+ precision_score, recall_score, roc_auc_score)
 from sklearn.preprocessing import label_binarize
 from preprocessing import load_data, preprocess_data
 
 def load_models():
     xgb_model = joblib.load("models/best_model_xgb.joblib")
     nn_model = tf.keras.models.load_model("models/best_model_nn.keras")
-    scaler = joblib.load("models/scaler.joblib")
-    return xgb_model, nn_model, scaler
+    scalers = joblib.load("models/scalers.joblib")
+    return xgb_model, nn_model, scalers
 
 def evaluate_model(model, X_test, y_test, model_name):
     # Check if the model is a callable (function) or has a predict method
@@ -27,17 +27,17 @@ def evaluate_model(model, X_test, y_test, model_name):
 
     # Round predictions to nearest integer for classification metrics
     y_pred_rounded = np.round(y_pred).astype(int)
-    
+
     # Calculate metrics
     accuracy = accuracy_score(y_test, y_pred_rounded)
     precision = precision_score(y_test, y_pred_rounded, average='weighted')
     recall = recall_score(y_test, y_pred_rounded, average='weighted')
-    
+
     # For AUC-ROC, we need to binarize the true labels and predictions
     n_classes = len(np.unique(y_test))
     y_test_bin = label_binarize(y_test, classes=range(n_classes))
     y_pred_bin = label_binarize(y_pred_rounded, classes=range(n_classes))
-    
+
     try:
         auc_roc = roc_auc_score(y_test_bin, y_pred_bin, average='weighted', multi_class='ovr')
     except ValueError:
@@ -60,12 +60,12 @@ def evaluate_model(model, X_test, y_test, model_name):
     return y_pred
 
 def main():
-    # Load the models and scaler first
-    xgb_model, nn_model, scaler = load_models()
+    # Load the models and scalers first
+    xgb_model, nn_model, scalers = load_models()
 
     # Load and preprocess the data
     X, y = load_data("categorization/categorized.json")
-    X_preprocessed = preprocess_data(X, y, is_training=False, scaler=scaler)
+    X_preprocessed = preprocess_data(X, y, is_training=False, scalers=scalers)
 
     # Evaluate XGBoost model
     xgb_pred = evaluate_model(xgb_model, X_preprocessed, y, "XGBoost")

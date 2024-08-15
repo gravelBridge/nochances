@@ -104,7 +104,7 @@ def objective(trial, X, y):
 def main():
     X, y = load_data("categorization/categorized.json")
 
-    X_preprocessed, y_preprocessed, scaler = preprocess_data(X, y, is_training=True)
+    X_preprocessed, y_preprocessed, scalers = preprocess_data(X, y, is_training=True)
 
     X_train, X_test, y_train, y_test = train_test_split(
         X_preprocessed,
@@ -160,9 +160,9 @@ def main():
     print(f"MSE: {mse:.4f}")
     print(f"MAE: {mae:.4f}")
 
-    # Save the best model and scaler
+    # Save the best model and scalers
     joblib.dump(best_model, f"models/best_model_{best_model_type.lower()}.joblib")
-    joblib.dump(scaler, "models/scaler.joblib")
+    joblib.dump(scalers, "models/scalers.joblib")
 
     # Ensemble prediction
     y_pred_ensemble = (y_pred + y_pred_nn) / 2
