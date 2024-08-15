@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 
 class PredictionForm(FlaskForm):
     school = StringField('College Name', validators=[DataRequired()])
-    app_round = StringField('EA/RD', validators=[DataRequired()])
+    app_round = StringField('Admissions Round (EA, RD, etc.)', validators=[DataRequired()])
     major = StringField('Intended Major/s', validators=[DataRequired()])
     info = TextAreaField('The more detailed and comprehensive you are, the more accurate our result is! Note that if you are not detailed enough in ECs or Awards, you will get an abnormaly high probability of acceptance due to the lack of ability to extract enough data for the model.', 
                          validators=[DataRequired()],

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.impute import SimpleImputer
 from imblearn.over_sampling import SMOTE
 import json
@@ -38,120 +38,62 @@ def load_data(file_path, inference=False):
 
 
 def feature_engineering(X):
-    # Original features
-    df = pd.DataFrame(
-        X,
-        columns=[
-            "ethnicity",
-            "gender",
-            "income_bracket",
-            "type_school",
-            "app_round",
-            "gpa",
-            "ap_ib_courses",
-            "ap_ib_scores",
-            "test_score",
-            "location",
-            "state_status",
-            "legacy",
-            "intended_major",
-            "major_alignment",
-            "first_gen",
-            "languages",
-            "special_talents",
-            "hooks",
-            "nat_int",
-            "reg",
-            "local",
-            "volunteering",
-            "ent",
-            "intern",
-            "add",
-            "res",
-            "sports",
-            "work_exp",
-            "leadership",
-            "community_impact",
-            "ec_years",
-            "int_awards",
-            "nat_awards",
-            "state_awards",
-            "local_awards",
-            "other_awards",
-        ],
-    )
+    # Convert X to DataFrame if it's not already
+    df = pd.DataFrame(X) if not isinstance(X, pd.DataFrame) else X.copy()
+    
+    # Define column names if they're not already set
+    if df.columns.dtype == 'int64':
+        df.columns = [
+            "ethnicity", "gender", "income_bracket", "type_school", "app_round",
+            "gpa", "ap_ib_courses", "ap_ib_scores", "test_score", "location",
+            "state_status", "legacy", "intended_major", "major_alignment",
+            "first_gen", "languages", "special_talents", "hooks",
+            "nat_int", "reg", "local", "volunteering", "ent", "intern", "add",
+            "res", "sports", "work_exp", "leadership", "community_impact",
+            "ec_years", "int_awards", "nat_awards", "state_awards",
+            "local_awards", "other_awards"
+        ]
 
-    # Interaction terms
+    # Apply StandardScaler to original numerical features
+    original_num_features = ["gpa", "ap_ib_courses", "ap_ib_scores", "test_score", 
+                             "income_bracket", "languages", "hooks", "nat_int", 
+                             "reg", "local", "volunteering", "ent", "intern", 
+                             "add", "res", "sports", "work_exp", "leadership", 
+                             "ec_years", "int_awards", "nat_awards", "state_awards", 
+                             "local_awards", "other_awards"]
+    
+    scaler_original = StandardScaler()
+    df[original_num_features] = scaler_original.fit_transform(df[original_num_features])
+
+    # Create engineered features using normalized original features
     df["gpa_test_score"] = df["gpa"] * df["test_score"]
     df["ap_ib_total"] = df["ap_ib_courses"] * df["ap_ib_scores"]
     df["income_first_gen"] = df["income_bracket"] * df["first_gen"]
 
-    # Aggregated features
-    df["total_awards"] = (
-        df["int_awards"]
-        + df["nat_awards"]
-        + df["state_awards"]
-        + df["local_awards"]
-        + df["other_awards"]
-    )
-    df["total_ecs"] = (
-        df["nat_int"]
-        + df["reg"]
-        + df["local"]
-        + df["volunteering"]
-        + df["ent"]
-        + df["intern"]
-        + df["add"]
-        + df["res"]
-        + df["sports"]
-        + df["work_exp"]
-    )
-
-    # Polynomial features for important columns
-    for col in ["gpa", "test_score", "ap_ib_total", "total_awards", "total_ecs"]:
+    # Create polynomial features
+    for col in ["gpa", "test_score", "ap_ib_total"]:
         df[f"{col}_squared"] = df[col] ** 2
 
-    # Normalize ec_years by total_ecs
-    df["avg_ec_years"] = df["ec_years"] / (
-        df["total_ecs"] + 1
-    )  # Add 1 to avoid division by zero
+    # Normalize ec_years by total extracurricular activities
+    total_ecs = df["nat_int"] + df["reg"] + df["local"] + df["volunteering"] + df["ent"] + df["intern"] + df["add"] + df["res"] + df["sports"] + df["work_exp"]
+    df["avg_ec_years"] = df["ec_years"] / (total_ecs + 1)  # Add 1 to avoid division by zero
 
-    # One-hot encode
-    categorical_columns = [
-        "ethnicity",
-        "gender",
-        "type_school",
-        "location",
-        "app_round",
-        "state_status",
-        "legacy",
-        "first_gen",
-        "special_talents",
-    ]
+    # Apply MinMaxScaler to engineered features
+    engineered_features = ["gpa_test_score", "ap_ib_total", "income_first_gen", 
+                           "gpa_squared", "test_score_squared", "ap_ib_total_squared", 
+                           "avg_ec_years"]
+    
+    scaler_engineered = MinMaxScaler()
+    df[engineered_features] = scaler_engineered.fit_transform(df[engineered_features])
 
-    # Define all possible categories for each categorical column
-    category_mappings = {
-        "ethnicity": [0, 1],
-        "gender": [0, 1, 2],
-        "type_school": [0, 1, 2, 3, 4],
-        "location": [0, 1, 2],
-        "app_round": [0, 1],
-        "state_status": [0, 1],
-        "legacy": [0, 1],
-        "first_gen": [0, 1],
-        "special_talents": [0, 1, 2, 3, 4],
-    }
-
-    # Encoding categorical variables
+    # One-hot encode categorical features
+    categorical_columns = ["ethnicity", "gender", "type_school", "location", "app_round", 
+                           "state_status", "legacy", "first_gen", "special_talents"]
+    
     for col in categorical_columns:
-        for category in category_mappings[col]:
-            df[f"{col}_{category}"] = (df[col] == category).astype(int)
-
-    # Drop original categorical columns
-    df = df.drop(columns=categorical_columns)
+        df = pd.get_dummies(df, columns=[col], prefix=col)
 
     return df
-
 
 def preprocess_data(X, y=None, is_training=True, scaler=None):
     X = feature_engineering(X)
@@ -161,27 +103,19 @@ def preprocess_data(X, y=None, is_training=True, scaler=None):
     X = imputer.fit_transform(X)
 
     if is_training:
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-
         if y is not None:
             # Convert y to categorical for stratification
-            y_cat = pd.cut(
-                y, bins=[-np.inf, 0.5, 1.5, 2.5, np.inf], labels=[0, 1, 2, 3]
-            )
+            y_cat = pd.cut(y, bins=[-np.inf, 0.5, 1.5, 2.5, np.inf], labels=[0, 1, 2, 3])
 
             # Apply SMOTE to balance the dataset
             smote = SMOTE(random_state=42)
-            X_resampled, y_resampled = smote.fit_resample(X_scaled, y_cat)
+            X_resampled, y_resampled = smote.fit_resample(X, y_cat)
 
             # Convert y back to continuous
             y_resampled = y_resampled.astype(float)
 
-            return X_resampled, y_resampled, scaler
+            return X_resampled, y_resampled, None  # Return None instead of scaler
         else:
-            return X_scaled, scaler
+            return X, None  # Return None instead of scaler
     else:
-        if scaler is None:
-            raise ValueError("Scaler must be provided for inference")
-        X_scaled = scaler.transform(X)
-        return X_scaled
+        return X

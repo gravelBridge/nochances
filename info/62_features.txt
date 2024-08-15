@@ -1,0 +1,17 @@
+Original features: 37
+Added interaction terms: 3 (gpa_test_score, ap_ib_total, income_first_gen)
+Added polynomial features: 5 (gpa_squared, test_score_squared, ap_ib_total_squared, total_awards_squared, total_ecs_squared)
+Added normalized feature: 1 (avg_ec_years)
+One-hot encoded features:
+
+    ethnicity: 2 (0, 1)
+    gender: 3 (0, 1, 2)
+    type_school: 5 (0, 1, 2, 3, 4)
+    location: 3 (0, 1, 2)
+    app_round: 2 (0, 1)
+    state_status: 2 (0, 1)
+    legacy: 2 (0, 1)
+    first_gen: 2 (0, 1)
+    special_talents: 5 (0, 1, 2, 3, 4)
+
+37 (original) + 3 (interaction) + 5 (polynomial) + 1 (normalized) + 17 (one-hot encoded) = 63 features
