@@ -1,6 +1,6 @@
 # Predicting College Admission Results with Machine Learning on Unstructured Online Data
 
-This repository accompanies the paper *"Predicting College Admission Results with Machine Learning on Unstructured Online Data"*. It leverages advanced language models (GPT-4o) and traditional machine learning techniques (XGBoost, Neural Networks, Random Forests) to predict US college admission outcomes from user-submitted, unstructured application data posted on the r/collegeresults subreddit. By bridging the gap between raw, unstructured text and structured prediction features, this project aims to provide greater transparency and data-driven insights into the opaque college admissions process.
+This repository accompanies the paper [*"Predicting College Admission Results with Machine Learning on Unstructured Online Data"*](https://drive.google.com/file/d/1POmM-Nsp_GbBwEzh3vb2-_D-_eP7Ibeh/view?usp=sharing). It leverages advanced language models (GPT-4o) and traditional machine learning techniques (XGBoost, Neural Networks, Random Forests) to predict US college admission outcomes from user-submitted, unstructured application data posted on the r/collegeresults subreddit. By bridging the gap between raw, unstructured text and structured prediction features, this project aims to provide greater transparency and data-driven insights into the opaque college admissions process.
 
 ## Table of Contents
 - [Overview](#overview)
